@@ -1,0 +1,27 @@
+name: 💡 Feature Planning 💡
+description: Feature to be added onto the proyect.
+labels: ["feature-planning"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in all required fields with as many details as possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        Describe the feature to be added.
+        If feature is from another member, please add the reference.
+      placeholder: |
+        Please enter a description of the feature.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Discord contact info
+      description: Provide your Discord tag here so we can contact you in case we need more details. Be sure to join our server ([here](https://discord.gg/6CzjAG6GZk)).
+      placeholder: ex. Lunos#4026
+    validations:
+      required: false

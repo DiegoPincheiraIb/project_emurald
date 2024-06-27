@@ -241,35 +241,6 @@ static void SetFontsPointer(const struct FontInfo *fonts)
     gFonts = fonts;
 }
 
-// Any ROM address must have bit 27 set (0x8000000)
-// so this is used to check if a pointer points to ROM
-#define IS_ROM_PTR(ptr) (((u32)ptr) >> 27)
-
-void * MirrorPtr(const void *ptr)
-{
-    if (IS_ROM_PTR(ptr)) // ROM
-        return ROM_MIRROR_PTR(ptr);
-    else // RAM
-        return RAM_MIRROR_PTR(ptr);
-}
-
-void * UnmirrorPtr(const void *ptr)
-{
-    u32 value = (u32) ptr;
-    if (IS_ROM_PTR(ptr)) // ROM
-        return (void*)(value & ~ROM_MIRROR_MASK);
-    else // RAM
-        return (void*)(value & ~RAM_MIRROR_MASK);
-}
-
-bool32 IsMirrorPtr(const void *ptr)
-{
-    if (IS_ROM_PTR(ptr))
-        return ((u32)ptr) & ROM_MIRROR_MASK;
-    else
-        return ((u32)ptr) & RAM_MIRROR_MASK;
-}
-
 void DeactivateAllTextPrinters(void)
 {
     int printer;
@@ -297,11 +268,6 @@ u16 AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 
     return AddTextPrinter(&printerTemplate, speed, callback);
 }
 
-u16 AddTextPrinterFixedCaseParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 y, u8 speed, void (*callback)(struct TextPrinterTemplate *, u16))
-{
-    return AddTextPrinterParameterized(windowId, fontId, MirrorPtr(str), x, y, speed, callback);
-}
-
 bool32 AddTextPrinter(struct TextPrinterTemplate *printerTemplate, u8 speed, void (*callback)(struct TextPrinterTemplate *, u16))
 {
     int i;
@@ -315,16 +281,6 @@ bool32 AddTextPrinter(struct TextPrinterTemplate *printerTemplate, u8 speed, voi
     sTempTextPrinter.textSpeed = speed;
     sTempTextPrinter.delayCounter = 0;
     sTempTextPrinter.scrollDistance = 0;
-    if (DECAP_ENABLED)
-    {
-        // string address is mirrored; treat it as a fixed-case string
-        // Technically, unmirroring isn't necessary;
-        // but older emulators may not support mirroring
-        // printerTemplate->currentChar = UnmirrorPtr(printerTemplate->currentChar);
-        if (DECAP_MIRRORING && IsMirrorPtr(printerTemplate->currentChar))
-            sTempTextPrinter.lastChar = CHAR_FIXED_CASE;
-        sTempTextPrinter.lastChar = 0;
-    }
 
     for (i = 0; i < (int)ARRAY_COUNT(sTempTextPrinter.subStructFields); i++)
         sTempTextPrinter.subStructFields[i] = 0;
@@ -976,30 +932,10 @@ void DrawDownArrow(u8 windowId, u16 x, u16 y, u8 bgColor, bool32 drawArrow, u8 *
     }
 }
 
-// if table[char] & 0xFF == 0, character is not uppercase
-const u16 gLowercaseDiffTable[] = {
-    // English
-    [CHAR_SPACE]                            = 0,
-    [CHAR_SPACER]                           = 0,
-    [CHAR_A ... CHAR_Z]                     = CHAR_a - CHAR_A,
-    // é treated as uppercase so POKéDEX, POKéMON, etc. decapped
-    [CHAR_e_ACUTE]                          = 0 | MARK_UPPER_FLAG,
-    [CHAR_SGL_QUOTE_RIGHT]                  = 0 | MARK_UPPER_FLAG,
-    // International
-    [CHAR_A_GRAVE ... CHAR_A_ACUTE]         = CHAR_a_GRAVE - CHAR_A_GRAVE,
-    [CHAR_A_CIRCUMFLEX]                     = CHAR_a_CIRCUMFLEX,
-    [CHAR_C_CEDILLA ... CHAR_I_GRAVE]       = CHAR_c_CEDILLA - CHAR_C_CEDILLA,
-    [CHAR_I_ACUTE]                          = CHAR_i_ACUTE,
-    [CHAR_I_CIRCUMFLEX ... CHAR_N_TILDE]    = CHAR_i_CIRCUMFLEX - CHAR_I_CIRCUMFLEX,
-    [CHAR_A_DIAERESIS ... CHAR_U_DIAERESIS] = CHAR_a_DIAERESIS - CHAR_A_DIAERESIS,
-    [EOS]                                   = 0,
-};
-
 static u16 RenderText(struct TextPrinter *textPrinter)
 {
     struct TextPrinterSubStruct *subStruct = (struct TextPrinterSubStruct *)(&textPrinter->subStructFields);
-    u32 currChar;
-    u32 lastChar;
+    u16 currChar;
     s32 width;
     s32 widthHelper;
     u8 repeats = 4;
@@ -1026,20 +962,19 @@ static u16 RenderText(struct TextPrinter *textPrinter)
         else
             textPrinter->delayCounter = textPrinter->textSpeed;
 
-        switch (GetPlayerTextSpeed())
-		{
-        case OPTIONS_TEXT_SPEED_SLOW:
-            repeats = 1;
-            break;
-        case OPTIONS_TEXT_SPEED_MID:
-            repeats = 1;
-            break;
-        case OPTIONS_TEXT_SPEED_FAST:
-            repeats = 2;
-            break;
-		}
-        do
+        currChar = *textPrinter->printerTemplate.currentChar;
+        textPrinter->printerTemplate.currentChar++;
+
+        switch (currChar)
         {
+        case CHAR_NEWLINE:
+            textPrinter->printerTemplate.currentX = textPrinter->printerTemplate.x;
+            textPrinter->printerTemplate.currentY += (gFonts[textPrinter->printerTemplate.fontId].maxLetterHeight + textPrinter->printerTemplate.lineSpacing);
+            return RENDER_REPEAT;
+        case PLACEHOLDER_BEGIN:
+            textPrinter->printerTemplate.currentChar++;
+            return RENDER_REPEAT;
+        case EXT_CTRL_CODE_BEGIN:
             currChar = *textPrinter->printerTemplate.currentChar;
             textPrinter->printerTemplate.currentChar++;
             if (DECAP_ENABLED)
@@ -1184,62 +1119,70 @@ static u16 RenderText(struct TextPrinter *textPrinter)
                     textPrinter->japanese = FALSE;
                     return RENDER_REPEAT;
                 }
-                break;
-            case CHAR_PROMPT_CLEAR:
-                textPrinter->state = RENDER_STATE_CLEAR;
-                TextPrinterInitDownArrowCounters(textPrinter);
-                return RENDER_UPDATE;
-            case CHAR_PROMPT_SCROLL:
-                textPrinter->state = RENDER_STATE_SCROLL_START;
-                TextPrinterInitDownArrowCounters(textPrinter);
-                return RENDER_UPDATE;
-            case CHAR_EXTRA_SYMBOL:
-                currChar = *textPrinter->printerTemplate.currentChar | 0x100;
-                textPrinter->printerTemplate.currentChar++;
-                break;
-            case CHAR_KEYPAD_ICON:
-                currChar = *textPrinter->printerTemplate.currentChar++;
-                gCurGlyph.width = DrawKeypadIcon(textPrinter->printerTemplate.windowId, currChar, textPrinter->printerTemplate.currentX, textPrinter->printerTemplate.currentY);
-                textPrinter->printerTemplate.currentX += gCurGlyph.width + textPrinter->printerTemplate.letterSpacing;
-                return RENDER_PRINT;
-            case EOS:
-                if (DECAP_ENABLED)
-                    // Clear fixed case
-                    textPrinter->lastChar = currChar;
-                return RENDER_FINISH;
-        #if DECAP_ENABLED
-            // Disable/enable decapitalization
-            // In vanilla these are 1-2 pixel spaces
-            case CHAR_FIXED_CASE:
-            case CHAR_UNFIX_CASE:
-                textPrinter->lastChar = currChar;
-                if (!textPrinter->japanese)
-                    return RENDER_REPEAT;
-                break;
-            // common decap exceptions
-            case CHAR_V:
-                if (lastChar == CHAR_T) // TV
-                    lastChar = 0;
-                break;
-            case CHAR_M:
-                if (lastChar == CHAR_T) { // TM
-                    lastChar = 0;
-                    break;
-                }
-            case CHAR_P:
-                if (lastChar == CHAR_H) { // HP, HM
-                    lastChar = 0;
-                    break;
-                }
-            case CHAR_C:
-                if (lastChar == CHAR_P) // PC, PP, PM
-                    lastChar = 0;
-                break;
-        #endif
+                return RENDER_REPEAT;
+            case EXT_CTRL_CODE_MIN_LETTER_SPACING:
+                textPrinter->minLetterSpacing = *textPrinter->printerTemplate.currentChar++;
+                return RENDER_REPEAT;
+            case EXT_CTRL_CODE_JPN:
+                textPrinter->japanese = TRUE;
+                return RENDER_REPEAT;
+            case EXT_CTRL_CODE_ENG:
+                textPrinter->japanese = FALSE;
+                return RENDER_REPEAT;
             }
+            break;
+        case CHAR_PROMPT_CLEAR:
+            textPrinter->state = RENDER_STATE_CLEAR;
+            TextPrinterInitDownArrowCounters(textPrinter);
+            return RENDER_UPDATE;
+        case CHAR_PROMPT_SCROLL:
+            textPrinter->state = RENDER_STATE_SCROLL_START;
+            TextPrinterInitDownArrowCounters(textPrinter);
+            return RENDER_UPDATE;
+        case CHAR_EXTRA_SYMBOL:
+            currChar = *textPrinter->printerTemplate.currentChar | 0x100;
+            textPrinter->printerTemplate.currentChar++;
+            break;
+        case CHAR_KEYPAD_ICON:
+            currChar = *textPrinter->printerTemplate.currentChar++;
+            gCurGlyph.width = DrawKeypadIcon(textPrinter->printerTemplate.windowId, currChar, textPrinter->printerTemplate.currentX, textPrinter->printerTemplate.currentY);
+            textPrinter->printerTemplate.currentX += gCurGlyph.width + textPrinter->printerTemplate.letterSpacing;
+            return RENDER_PRINT;
+        case EOS:
+            return RENDER_FINISH;
+        }
 
-            // If not Japanese or fixed case, try to decap
-            if (DECAP_ENABLED && !textPrinter->japanese && lastChar != CHAR_FIXED_CASE)
+        switch (subStruct->fontId)
+        {
+        case FONT_SMALL:
+            DecompressGlyph_Small(currChar, textPrinter->japanese);
+            break;
+        case FONT_NORMAL:
+            DecompressGlyph_Normal(currChar, textPrinter->japanese);
+            break;
+        case FONT_SHORT:
+        case FONT_SHORT_COPY_1:
+        case FONT_SHORT_COPY_2:
+        case FONT_SHORT_COPY_3:
+            DecompressGlyph_Short(currChar, textPrinter->japanese);
+            break;
+        case FONT_NARROW:
+            DecompressGlyph_Narrow(currChar, textPrinter->japanese);
+            break;
+        case FONT_SMALL_NARROW:
+            DecompressGlyph_SmallNarrow(currChar, textPrinter->japanese);
+            break;
+        case FONT_BRAILLE:
+            break;
+        }
+
+        CopyGlyphToWindow(textPrinter);
+
+        if (textPrinter->minLetterSpacing)
+        {
+            textPrinter->printerTemplate.currentX += gCurGlyph.width;
+            width = textPrinter->minLetterSpacing - gCurGlyph.width;
+            if (width > 0)
             {
                 // Two consecutive uppercase chars; lowercase this one
                 if (IS_UPPER(currChar) && IS_UPPER(lastChar))

@@ -1228,12 +1228,6 @@ const struct BattleMoveEffect gBattleMoveEffects[NUM_BATTLE_MOVE_EFFECTS] =
         .battleTvScore = 0, // TODO: Assign points
     },
 
-    [EFFECT_BULLDOZE] =
-    {
-        .battleScript = BattleScript_EffectHit,
-        .battleTvScore = 0, // TODO: Assign points
-    },
-
     [EFFECT_FOUL_PLAY] =
     {
         .battleScript = BattleScript_EffectHit,
@@ -1937,12 +1931,6 @@ const struct BattleMoveEffect gBattleMoveEffects[NUM_BATTLE_MOVE_EFFECTS] =
     [EFFECT_PHOTON_GEYSER] =
     {
         .battleScript = BattleScript_EffectPhotonGeyser,
-        .battleTvScore = 0, // TODO: Assign points
-    },
-
-    [EFFECT_SHELL_SIDE_ARM] =
-    {
-        .battleScript = BattleScript_EffectShellSideArm,
         .battleTvScore = 0, // TODO: Assign points
     },
 

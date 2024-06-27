@@ -19,12 +19,12 @@ La planificación de avance consiste en implementar una serie de QoL Features en
 )
 - [x] Se omite confirmación extra al guardar.
 - [x] Diálogos y texto en pantalla son más rápidos.
-- [ ] Items de Botiquin se pueden usar uno tras otro.
+- [x] Items de Botiquin se pueden usar uno tras otro.
 - [x] Es posible correr dentro de edificios.
-- [ ] Presionar R activa/desactiva la opción de correr sin mantener presionado el boton B.
-- [ ] Repelentes se pueden usar en cadena.
-- [ ] Diálogo más breve al intentar aprender más de 4 movimientos.
-- [ ] Posibilidad de saltar la cinemática de inicio.
+- [x] Presionar R activa/desactiva la opción de correr sin mantener presionado el boton B.
+- [x] Repelentes se pueden usar en cadena.
+- [x] Diálogo más breve al intentar aprender más de 4 movimientos.
+- [x] Posibilidad de saltar la cinemática de inicio.
 
 ### Nivel 3: Mejoras al menú de Equipo de Pokémon
 

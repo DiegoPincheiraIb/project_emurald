@@ -2235,7 +2235,8 @@ static void ResumeMap(bool32 a1)
     ResetCameraUpdateInfo();
     InstallCameraPanAheadCallback();
     FreeAllSpritePalettes();
-
+    UpdateSeason();
+    UpdateDayOfWeek();
     FieldEffectActiveListClear();
     StartWeather();
     ResumePausedWeather();

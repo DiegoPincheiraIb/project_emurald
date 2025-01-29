@@ -74,9 +74,9 @@
     #define MORNING_HOUR_END   10
 
     #define DAY_HOUR_BEGIN     10
-    #define DAY_HOUR_END       19
+    #define DAY_HOUR_END       17
 
-    #define EVENING_HOUR_BEGIN 19
+    #define EVENING_HOUR_BEGIN 17
     #define EVENING_HOUR_END   20
 
     #define NIGHT_HOUR_BEGIN   20
@@ -119,5 +119,22 @@ void CalcTimeDifference(struct Time *result, struct Time *t1, struct Time *t2);
 u32 RtcGetMinuteCount(void);
 u32 RtcGetLocalDayCount(void);
 void FormatDecimalTimeWithoutSeconds(u8 *dest, s8 hour, s8 minute, bool32 is24Hour);
+u8 Rtc_GetCurrentHour(void);
+u8 Rtc_GetCurrentMinute(void);
+u8 Rtc_GetCurrentMonth(void);
+u8 Rtc_GetCurrentDay(void);
+u8 Rtc_GetCurrentYear(void);
+u8 Rtc_GetCurrentDayOfWeek(void);
+void Rtc_GetCurrentSeason_Short(void);
+void UpdateSeason(void);
+void UpdateDayOfWeek(void);
+const u8 *ConvertSeasonInt2Str(void);
+const u8 *ConvertDayOfWeekInt2Str(void);
+const u8 *ConvertMonth2Str(u8);
+void FormatDecimalDateV2(u8 *dest, s32 year, s32 month, s32 day);
+void FormatDecimalTimeWOSeconds(u8 *dest, u8 hour, u8 minute);
+void FormatDecimalDateDay(u8 *dest, s32 day);
+void FormatDecimalDateYear(u8 *dest, s32 year);
+
 
 #endif // GUARD_RTC_UTIL_H

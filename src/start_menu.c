@@ -159,7 +159,6 @@ enum
 COMMON_DATA bool8 (*gMenuCallback)(void) = NULL;
 
 // EWRAM
-EWRAM_DATA static u8 sAuxWindowsID               = 0;
 EWRAM_DATA static u8 sSafariBallsWindowId        = 0;
 EWRAM_DATA static u8 sBattlePyramidFloorWindowId = 0;
 EWRAM_DATA static u8 sStartMenuCursorPos         = 0;

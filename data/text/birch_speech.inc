@@ -22,7 +22,7 @@ gText_Birch_MainSpeech::
 	.string "fieldwork, so I decided to pre record\n"
 	.string "this conversation to introduce to you.\p"
 	.string "Your father is a very close friend, and\n"
-	.string "have the family of the newly appointed\p "
+	.string "having the family of the newly appointed\p "
 	.string "{COLOR BLUE}Petalburg Gym Leader{COLOR DARK_GRAY} as our new\n"
 	.string "neighbors on Littleroot Town is an honor!\p"
 	.string "$"

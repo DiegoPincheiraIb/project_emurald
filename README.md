@@ -1,3 +1,27 @@
+# Pokémon Eμrald
+
+## About this proyect
+
+Pokémon Emurald, also know as Pokémon Eμrald, is a decomp hack base project based off RHH's [pokemerald-expansionv1.10.1](https://github.com/rh-hideout/pokeemerald-expansion/) and pret's [pokeemerald](https://github.com/pret/pokeemerald) decompilation projects. It takes pokemerald-expansion v1.10.1 and expands upon it, adding multiple QoL features and improvements, to make it a **fresh experience** for newcomers and veterans alike.
+
+The project aims to **rework** Pokemon Emerald based on three main pillars:
+1. Replayability
+2. Balanced gameplay
+3. Fun
+
+## Main features
+
+Because it takes RHH's expansion as base, almost [all the features of RHH's](README.md#what-features-are-included) are present, in one way or another. Features from various member of the community are present too, and also custom features.
+
+[Here](FEATURES.md) is the complete list of features.
+
+## Team
+
+Currently, the team is:
+
+- @DiegoPincheiraIb -> Programmer
+- @ElNChou          -> Programmer
+
 # pokeemerald-expansion
 
 pokeemerald-expansion is ***a romhack base*** based off pret's [pokeemerald](https://github.com/pret/pokeemerald) decompilation project. ***It is NOT a playable romhack,*** but it has multiple features available to romhackers so that they can create their own games, so it's not meant to be played on its own.

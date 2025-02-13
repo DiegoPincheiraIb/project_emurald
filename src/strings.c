@@ -309,6 +309,7 @@ const u8 gText_PkmnCantLearnMove[] = _("{STR_VAR_1} and {STR_VAR_2}\nare not com
 const u8 gText_PkmnNeedsToReplaceMove[] = _("{STR_VAR_1} wants to learn the\nmove {STR_VAR_2}.\pShould a move be replaced with\n{STR_VAR_2}?");
 const u8 gText_StopLearningMove2[] = _("Stop trying to teach\n{STR_VAR_2}?");
 const u8 gText_MoveNotLearned[] = _("{STR_VAR_1} did not learn\n{STR_VAR_2}.{PAUSE_UNTIL_PRESS}");
+const u8 gText_MoveCanBeRelearned[] = _("{STR_VAR_2} can now be relearned\nat {STR_VAR_1}'s SUMMARY.{PAUSE_UNTIL_PRESS}");
 const u8 gText_WhichMoveToForget[] = _("Which move should be forgotten?{PAUSE_UNTIL_PRESS}");
 const u8 gText_12PoofForgotMove[] = _("{STR_VAR_1} forgot how to\nuse {STR_VAR_2}.{PAUSE_UNTIL_PRESS}");
 const u8 gText_PkmnAlreadyKnows[] = _("{STR_VAR_1} already knows\n{STR_VAR_2}.{PAUSE_UNTIL_PRESS}");

@@ -5540,7 +5540,10 @@ static void Task_DidNotLearnMove(u8 taskId)
 
     GetMonNickname(mon, gStringVar1);
     StringCopy(gStringVar2, GetMoveName(gPartyMenu.data1));
-    StringExpandPlaceholders(gStringVar4, gText_MoveNotLearned);
+    if(CheckIfItemIsTMHMOrEvolutionStone(gSpecialVar_ItemId) || gPartyMenu.action == PARTY_ACTION_MOVE_TUTOR)
+        StringExpandPlaceholders(gStringVar4, gText_MoveNotLearned);
+    else
+        StringExpandPlaceholders(gStringVar4, gText_MoveCanBeRelearned);
     DisplayPartyMenuMessage(gStringVar4, TRUE);
     if (gPartyMenu.learnMoveState == 1)
     {

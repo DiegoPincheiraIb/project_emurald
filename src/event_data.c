@@ -1,6 +1,7 @@
 #include "global.h"
 #include "event_data.h"
 #include "pokedex.h"
+#include "rtc.h"
 
 #define SPECIAL_FLAGS_SIZE  (NUM_SPECIAL_FLAGS / 8)  // 8 flags per byte
 #define TEMP_FLAGS_SIZE     (NUM_TEMP_FLAGS / 8)
@@ -96,6 +97,17 @@ bool32 IsNationalPokedexEnabled(void)
         return TRUE;
     else
         return FALSE;
+}
+
+bool8 IsRTCEnabled(void)
+{
+    return FlagGet(FLAG_IS_RTC_ENABLED);
+}
+void Set_RTC_Status(void)
+{
+    if (!(RtcGetErrorStatus() & RTC_ERR_FLAG_MASK))
+        FlagSet(FLAG_IS_RTC_ENABLED);
+    else FlagClear(FLAG_IS_RTC_ENABLED);
 }
 
 void DisableMysteryEvent(void)

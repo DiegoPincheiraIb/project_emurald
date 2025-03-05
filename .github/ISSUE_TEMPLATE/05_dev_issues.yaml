@@ -1,0 +1,30 @@
+name: 🙏 [DEV ONLY] Feature planning/implementation 🙏
+description: Use THIS to tackle development features.
+labels: ["feature-implementation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in all required fields with as many details as possible.
+        You MUST start with [DEV], followed by [FEATURE] if it is a new feature to add, or [BUG] if it is, of course, a bug.
+  - type: textarea
+    id: source
+    attributes:
+      label: Source Info
+      description: |
+        Write down the link of the source of the modification.
+        Also, try to add the author of the modification.
+      placeholder: |
+        Enter a https:// or similar, followed by the author's name.
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        Describe what this feature is about/how it benefits the project.
+      placeholder: |
+        Please enter a description of the feature. You can also attach log screenshots, gifs or a video if you find convenient.
+    validations:
+      required: true

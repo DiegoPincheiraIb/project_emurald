@@ -15,6 +15,24 @@
 
 enum
 {
+    SEASON_SUMMER = 0,
+    SEASON_AUTUMM,
+    SEASON_WINTER,
+    SEASON_SPRING
+};
+enum
+{
+    SUNDAY = 0,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+};
+
+enum
+{
     MONTH_JAN = 1,
     MONTH_FEB,
     MONTH_MAR,

@@ -21,7 +21,7 @@
 #include "gpu_regs.h"
 #include "international_string_util.h"
 #include "pokedex.h"
-#include "pokemon_icon.h"
+#include "pokemon.h"
 #include "graphics.h"
 #include "pokemon_icon.h"
 #include "trainer_pokemon_sprites.h"
@@ -94,6 +94,8 @@ struct TrainerCardData
 // EWRAM
 EWRAM_DATA struct TrainerCard gTrainerCards[4] = {0};
 EWRAM_DATA static struct TrainerCardData *sData = NULL;
+static EWRAM_DATA u8 spriteIdData[PARTY_SIZE] = {};
+static EWRAM_DATA u16 spriteIdPalette[PARTY_SIZE] = {};
 
 //this file's functions
 static void VblankCb_TrainerCard(void);
@@ -167,6 +169,8 @@ static bool8 Task_AnimateCardFlipUp(struct Task *task);
 static bool8 Task_EndCardFlip(struct Task *task);
 static void UpdateCardFlipRegs(u16);
 static void LoadMonIconGfx(void);
+static void UpdateTrainerCardMonIcons(void);
+static void DestroyTrainerCardMonIcons(void);
 
 static const u32 sTrainerCardStickers_Gfx[]      = INCBIN_U32("graphics/trainer_card/frlg/stickers.4bpp.lz");
 static const u16 sUnused_Pal[]                   = INCBIN_U16("graphics/trainer_card/unused.gbapal");
@@ -465,6 +469,7 @@ static void Task_TrainerCard(u8 taskId)
     case STATE_WAIT_FLIP_TO_BACK:
         if (IsCardFlipTaskActive() && Overworld_IsRecvQueueAtMax() != TRUE)
         {
+            UpdateTrainerCardMonIcons();
             PlaySE(SE_RG_CARD_OPEN);
             sData->mainState = STATE_HANDLE_INPUT_BACK;
         }
@@ -483,6 +488,7 @@ static void Task_TrainerCard(u8 taskId)
             }
             else
             {
+                DestroyTrainerCardMonIcons();
                 FlipTrainerCard();
                 sData->mainState = STATE_WAIT_FLIP_TO_FRONT;
                 PlaySE(SE_RG_CARD_FLIP);
@@ -973,8 +979,8 @@ static bool8 PrintAllOnCardBack(void)
         PrintContestStringOnCard();
         break;
     case 6:
-        PrintPokemonIconsOnCard();
-        PrintBattleFacilityStringOnCard();
+//        PrintPokemonIconsOnCard();
+//        PrintBattleFacilityStringOnCard();
         break;
     case 7:
         PrintStickersOnCard();
@@ -1323,7 +1329,7 @@ static void BufferBattleFacilityStats(void)
     }
 }
 
-static void PrintBattleFacilityStringOnCard(void)
+static void UNUSED PrintBattleFacilityStringOnCard(void)
 {
     switch (sData->cardType)
     {
@@ -1340,7 +1346,7 @@ static void PrintBattleFacilityStringOnCard(void)
     }
 }
 
-static void PrintPokemonIconsOnCard(void)
+static void UNUSED PrintPokemonIconsOnCard(void)
 {
     u8 i;
     u8 paletteSlots[PARTY_SIZE] = {5, 6, 7, 8, 9, 10};
@@ -1899,4 +1905,32 @@ static void CreateTrainerCardTrainerPic(void)
                     8,
                     WIN_TRAINER_PIC);
     }
+}
+
+static void UpdateTrainerCardMonIcons(void)
+{
+    u16 species;
+    u8 i;
+    u8 x;
+    LoadMonIconPalettes();
+    x = 40;
+    for (i = 0; i < gPlayerPartyCount; i++, x += 32)
+    {
+        species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
+        spriteIdData[i] = CreateMonIcon(species, SpriteCB_MonIcon, x, 124, 1, GetMonData(&gPlayerParty[0], MON_DATA_PERSONALITY));
+        gSprites[spriteIdData[i]].oam.priority = 0;
+        StartSpriteAnim(&gSprites[spriteIdData[i]], 4);
+        spriteIdPalette[i] = GetValidMonIconPalIndex(species);
+        gSprites[spriteIdData[i]].oam.paletteNum = spriteIdPalette[i];
+    }
+}
+
+static void DestroyTrainerCardMonIcons(void)
+{
+    u8 i;
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        FreeAndDestroyMonIconSprite(&gSprites[spriteIdData[i]]);
+    }
+
 }

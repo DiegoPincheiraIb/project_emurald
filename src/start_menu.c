@@ -4,6 +4,7 @@
 #include "battle_pyramid_bag.h"
 #include "bg.h"
 #include "debug.h"
+#include "decompress.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "event_object_lock.h"
@@ -30,6 +31,7 @@
 #include "party_menu.h"
 #include "pokedex.h"
 #include "pokenav.h"
+#include "rtc.h"
 #include "safari_zone.h"
 #include "save.h"
 #include "scanline_effect.h"
@@ -49,6 +51,83 @@
 #include "constants/battle_frontier.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+
+//! ====================    Save Throbber animation    ====================
+#define TAG_THROBBER 0x1000
+static const u16 sThrobber_Pal[] = INCBIN_U16("graphics/text_window/throbber.gbapal");
+const u32 gThrobber_Gfx[] = INCBIN_U32("graphics/text_window/throbber.4bpp.lz");
+static u8 spriteId;
+
+static const struct OamData sOam_Throbber =
+{
+    .y = DISPLAY_HEIGHT,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_4BPP,
+    .shape = SPRITE_SHAPE(32x64),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(32x64),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const union AnimCmd sAnim_Throbber[] =
+{
+    ANIMCMD_FRAME(0, 4),
+    ANIMCMD_FRAME(32, 4),
+    ANIMCMD_FRAME(64, 4),
+    ANIMCMD_FRAME(96, 4),
+    ANIMCMD_FRAME(128, 4),
+    ANIMCMD_FRAME(160, 4),
+    ANIMCMD_FRAME(192, 4),
+    ANIMCMD_FRAME(224, 4),
+    ANIMCMD_JUMP(0),
+};
+
+static const union AnimCmd * const sAnims_Throbber[] = { sAnim_Throbber, };
+
+static const struct CompressedSpriteSheet sSpriteSheet_Throbber[] =
+{
+    {
+        .data = gThrobber_Gfx,
+        .size = 0x3200,
+        .tag = TAG_THROBBER
+    },
+    {}
+};
+
+static const struct SpritePalette sSpritePalettes_Throbber[] =
+{
+    {
+        .data = sThrobber_Pal,
+        .tag = TAG_THROBBER
+    },
+    {},
+};
+
+static const struct SpriteTemplate sSpriteTemplate_Throbber =
+{
+    .tileTag = TAG_THROBBER,
+    .paletteTag = TAG_THROBBER,
+    .oam = &sOam_Throbber,
+    .anims = sAnims_Throbber,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCallbackDummy
+};
+
+void ShowThrobber(void)
+{
+    LoadCompressedSpriteSheet(&sSpriteSheet_Throbber[0]);
+    LoadSpritePalettes(sSpritePalettes_Throbber);
+
+    // 217 and 123 are the x and y coordinates (in pixels)
+    spriteId = CreateSprite(&sSpriteTemplate_Throbber, 217, 123, 2);
+};
 
 // Menu actions
 enum
@@ -83,10 +162,10 @@ enum
 COMMON_DATA bool8 (*gMenuCallback)(void) = NULL;
 
 // EWRAM
-EWRAM_DATA static u8 sSafariBallsWindowId = 0;
+EWRAM_DATA static u8 sSafariBallsWindowId        = 0;
 EWRAM_DATA static u8 sBattlePyramidFloorWindowId = 0;
-EWRAM_DATA static u8 sStartMenuCursorPos = 0;
-EWRAM_DATA static u8 sNumStartMenuActions = 0;
+EWRAM_DATA static u8 sStartMenuCursorPos         = 0;
+EWRAM_DATA static u8 sNumStartMenuActions        = 0;
 EWRAM_DATA static u8 sCurrentStartMenuActions[9] = {0};
 EWRAM_DATA static s8 sInitStartMenuData[2] = {0};
 
@@ -125,7 +204,6 @@ static u8 SaveYesNoCallback(void);
 static u8 SaveConfirmInputCallback(void);
 static u8 SaveFileExistsCallback(void);
 static u8 SaveConfirmOverwriteDefaultNoCallback(void);
-static u8 SaveConfirmOverwriteCallback(void);
 static u8 SaveOverwriteInputCallback(void);
 static u8 SaveSavingMessageCallback(void);
 static u8 SaveDoSaveCallback(void);
@@ -150,7 +228,17 @@ static const struct WindowTemplate sWindowTemplate_SafariBalls = {
     .tilemapTop = 1,
     .width = 9,
     .height = 4,
-    .paletteNum = 15,
+    .paletteNum = 0xF,
+    .baseBlock = 0x8
+};
+
+static const struct WindowTemplate sWindowTemplate_StartMenu = {
+    .bg = 0,
+    .tilemapLeft = 1,
+    .tilemapTop = 1,
+    .width = 7,
+    .height = 6,
+    .paletteNum = 0xF,
     .baseBlock = 0x8
 };
 
@@ -172,7 +260,7 @@ static const struct WindowTemplate sWindowTemplate_PyramidFloor = {
     .tilemapTop = 1,
     .width = 10,
     .height = 4,
-    .paletteNum = 15,
+    .paletteNum = 0xF,
     .baseBlock = 0x8
 };
 
@@ -182,7 +270,7 @@ static const struct WindowTemplate sWindowTemplate_PyramidPeak = {
     .tilemapTop = 1,
     .width = 12,
     .height = 4,
-    .paletteNum = 15,
+    .paletteNum = 0xF,
     .baseBlock = 0x8
 };
 
@@ -228,7 +316,7 @@ static const struct WindowTemplate sWindowTemplates_LinkBattleSave[] =
         .tilemapTop = 15,
         .width = 26,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 0xF,
         .baseBlock = 0x194
     },
     DUMMY_WIN_TEMPLATE
@@ -240,7 +328,7 @@ static const struct WindowTemplate sSaveInfoWindowTemplate = {
     .tilemapTop = 1,
     .width = 14,
     .height = 10,
-    .paletteNum = 15,
+    .paletteNum = 0xF,
     .baseBlock = 8
 };
 
@@ -278,6 +366,7 @@ static void ShowSaveInfoWindow(void);
 static void RemoveSaveInfoWindow(void);
 static void HideStartMenuWindow(void);
 static void HideStartMenuDebug(void);
+static void ShowStartMenuExtraWindow(void);
 
 void SetDexPokemonPokenavFlags(void) // unused
 {
@@ -348,6 +437,7 @@ static void BuildNormalStartMenu(void)
     AddStartMenuAction(MENU_ACTION_SAVE);
     AddStartMenuAction(MENU_ACTION_OPTION);
     AddStartMenuAction(MENU_ACTION_EXIT);
+    ShowStartMenuExtraWindow();
 }
 
 static void BuildDebugStartMenu(void)
@@ -468,10 +558,14 @@ static void RemoveExtraStartMenuWindows(void)
         CopyWindowToVram(sSafariBallsWindowId, COPYWIN_GFX);
         RemoveWindow(sSafariBallsWindowId);
     }
-    if (InBattlePyramid())
+    else if (InBattlePyramid()) //Antes eran dos if separados
     {
         ClearStdWindowAndFrameToTransparent(sBattlePyramidFloorWindowId, FALSE);
         RemoveWindow(sBattlePyramidFloorWindowId);
+    }
+    else{ //Borra de la pantalla la venta auxiliar de la hora
+        ClearStdWindowAndFrameToTransparent(sSafariBallsWindowId, FALSE);
+        RemoveWindow(sSafariBallsWindowId);
     }
 }
 
@@ -1094,7 +1188,7 @@ static u8 SaveFileExistsCallback(void)
     }
     else
     {
-        ShowSaveMessage(gText_AlreadySavedFile, SaveConfirmOverwriteCallback);
+        sSaveDialogCallback = SaveSavingMessageCallback;
     }
 
     return SAVE_IN_PROGRESS;
@@ -1103,13 +1197,6 @@ static u8 SaveFileExistsCallback(void)
 static u8 SaveConfirmOverwriteDefaultNoCallback(void)
 {
     DisplayYesNoMenuWithDefault(1); // Show Yes/No menu (No selected as default)
-    sSaveDialogCallback = SaveOverwriteInputCallback;
-    return SAVE_IN_PROGRESS;
-}
-
-static u8 SaveConfirmOverwriteCallback(void)
-{
-    DisplayYesNoMenuDefaultYes(); // Show Yes/No menu
     sSaveDialogCallback = SaveOverwriteInputCallback;
     return SAVE_IN_PROGRESS;
 }
@@ -1133,6 +1220,7 @@ static u8 SaveOverwriteInputCallback(void)
 
 static u8 SaveSavingMessageCallback(void)
 {
+    ShowThrobber();
     ShowSaveMessage(gText_SavingDontTurnOff, SaveDoSaveCallback);
     return SAVE_IN_PROGRESS;
 }
@@ -1155,9 +1243,15 @@ static u8 SaveDoSaveCallback(void)
     }
 
     if (saveStatus == SAVE_STATUS_OK)
+    {
         ShowSaveMessage(gText_PlayerSavedGame, SaveSuccessCallback);
+        DestroySprite(&gSprites[spriteId]);
+    }
     else
+    {
         ShowSaveMessage(gText_SaveError, SaveErrorCallback);
+        DestroySprite(&gSprites[spriteId]);
+    }
 
     SaveStartTimer();
     return SAVE_IN_PROGRESS;
@@ -1504,4 +1598,35 @@ void Script_ForceSaveGame(struct ScriptContext *ctx)
     ShowSaveInfoWindow();
     gMenuCallback = SaveCallback;
     sSaveDialogCallback = SaveSavingMessageCallback;
+}
+
+static void ShowStartMenuExtraWindow(void) // Función que carga una ventana auxiliar en el menú de pausa.
+{   
+    u8 month;
+    u8 year;
+    sSafariBallsWindowId = AddWindow(&sWindowTemplate_StartMenu);
+    PutWindowTilemap(sSafariBallsWindowId);
+    DrawStdWindowFrame(sSafariBallsWindowId, FALSE);
+    // First Line: DayOfWeek, hh:mm
+    FormatDecimalTimeWOSeconds(gStringVar4, Rtc_GetCurrentHour(), Rtc_GetCurrentMinute());
+    UpdateDayOfWeek();
+    StringCopy(gStringVar1, ConvertDayOfWeekInt2Str());
+    StringAppend(gStringVar1, gStringVar4);
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 1, 0xFF, NULL);
+    // Second line: DD MMM YY
+    month = Rtc_GetCurrentMonth();
+    FormatDecimalDateDay(gStringVar5, Rtc_GetCurrentDay());
+    StringCopy(gStringVar2, ConvertMonth2Str(month));
+    StringAppend(gStringVar5, gStringVar2);
+    year = Rtc_GetCurrentYear();
+    FormatDecimalDateYear(gStringVar3, year);
+    StringAppend(gStringVar5, gStringVar3);
+    //FormatDecimalDateV2(gStringVar4, Rtc_GetCurrentYear(), Rtc_GetCurrentMonth(), Rtc_GetCurrentDay());
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar5, 0, 17, 0xFF, NULL);
+    // Third line: Season
+    UpdateSeason();
+    StringCopy(gStringVar1, ConvertSeasonInt2Str());
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 33, 0xFF, NULL);
+    // Outputs Window to VRAM
+    CopyWindowToVram(sSafariBallsWindowId, 2);
 }

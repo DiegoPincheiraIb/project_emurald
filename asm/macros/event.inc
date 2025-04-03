@@ -2509,6 +2509,7 @@
 	.macro cant_see_if_ne, a:req, b:req
 	compare \a, \b
 	cant_see_if 5
+	.endm
 
 	@ Show a map preview for the current map with the WEATHER type.
 	.macro mappreview

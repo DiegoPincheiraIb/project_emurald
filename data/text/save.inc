@@ -14,14 +14,12 @@ gText_PlayerSavedGame::
 	.string "{PLAYER} saved the game.$"
 
 gText_DifferentSaveFile::
-	.string "WARNING!\p"
-	.string "There is a different game file that\n"
-	.string "is already saved.\p"
+	.string "WARNING!\n"
+	.string "A different game file was found.\p"
 	.string "If you save now, the other file's\n"
-	.string "adventure, including items and\l"
-	.string "POKéMON, will be entirely lost.\p"
-	.string "Are you sure you want to save now\n"
-	.string "and overwrite the other save file?$"
+	.string "progress will be entirely lost.\p"
+	.string "Are you sure you want to save\n"
+	.string "and overwrite the last adventure?$"
 
 gText_SaveError::
 	.string "Save error.\p"

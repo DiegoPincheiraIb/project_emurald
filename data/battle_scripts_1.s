@@ -5597,8 +5597,7 @@ BattleScript_AskToLearnMove::
 	setbyte sLEARNMOVE_STATE, 0
 BattleScript_SelectMove::
 	yesnoboxlearnmove BattleScript_ForgotAndLearnedNewMove
- 	jumpifbyte CMP_EQUAL, sLEARNMOVE_STATE, 5,
-BattleScript_DidNotLearnMove
+ 	jumpifbyte CMP_EQUAL, sLEARNMOVE_STATE, 5, BattleScript_DidNotLearnMove
 	printstring STRINGID_STOPLEARNINGMOVE
 	waitstate
 	setbyte sLEARNMOVE_STATE, 0

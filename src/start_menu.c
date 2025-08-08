@@ -555,11 +555,8 @@ static void RemoveExtraStartMenuWindows(void)
     if (GetSafariZoneFlag())
     {
         ClearStdWindowAndFrameToTransparent(sSafariBallsWindowId, FALSE);
-        ClearStdWindowAndFrameToTransparent(sAuxWindowsID, FALSE);
         CopyWindowToVram(sSafariBallsWindowId, COPYWIN_GFX);
-        CopyWindowToVram(sAuxWindowsID, COPYWIN_GFX);
         RemoveWindow(sSafariBallsWindowId);
-        RemoveWindow(sAuxWindowsID);
     }
     else if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE)
     {
@@ -568,9 +565,7 @@ static void RemoveExtraStartMenuWindows(void)
     }
     else{ //Borra de la pantalla la venta auxiliar de la hora
         ClearStdWindowAndFrameToTransparent(sSafariBallsWindowId, FALSE);
-        ClearStdWindowAndFrameToTransparent(sAuxWindowsID, FALSE);
         RemoveWindow(sSafariBallsWindowId);
-        RemoveWindow(sAuxWindowsID);
     }
 }
 

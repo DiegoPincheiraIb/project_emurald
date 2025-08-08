@@ -1605,15 +1605,15 @@ static void ShowStartMenuExtraWindow(void) // Función que carga una ventana aux
 {   
     u8 month;
     u8 year;
-    sAuxWindowsID = AddWindow(&sWindowTemplate_StartMenu);
-    PutWindowTilemap(sAuxWindowsID);
-    DrawStdWindowFrame(sAuxWindowsID, FALSE);
+    sSafariBallsWindowId = AddWindow(&sWindowTemplate_StartMenu);
+    PutWindowTilemap(sSafariBallsWindowId);
+    DrawStdWindowFrame(sSafariBallsWindowId, FALSE);
     // First Line: DayOfWeek, hh:mm
     FormatDecimalTimeWOSeconds(gStringVar4, Rtc_GetCurrentHour(), Rtc_GetCurrentMinute());
     UpdateDayOfWeek();
     StringCopy(gStringVar1, ConvertDayOfWeekInt2Str());
     StringAppend(gStringVar1, gStringVar4);
-    AddTextPrinterParameterized(sAuxWindowsID, 1, gStringVar1, 0, 1, 0xFF, NULL);
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 1, 0xFF, NULL);
     // Second line: DD MMM YY
     month = Rtc_GetCurrentMonth();
     FormatDecimalDateDay(gStringVar5, Rtc_GetCurrentDay());
@@ -1623,11 +1623,11 @@ static void ShowStartMenuExtraWindow(void) // Función que carga una ventana aux
     FormatDecimalDateYear(gStringVar3, year);
     StringAppend(gStringVar5, gStringVar3);
     //FormatDecimalDateV2(gStringVar4, Rtc_GetCurrentYear(), Rtc_GetCurrentMonth(), Rtc_GetCurrentDay());
-    AddTextPrinterParameterized(sAuxWindowsID, 1, gStringVar5, 0, 17, 0xFF, NULL);
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar5, 0, 17, 0xFF, NULL);
     // Third line: Season
     UpdateSeason();
     StringCopy(gStringVar1, ConvertSeasonInt2Str());
-    AddTextPrinterParameterized(sAuxWindowsID, 1, gStringVar1, 0, 33, 0xFF, NULL);
+    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 33, 0xFF, NULL);
     // Outputs Window to VRAM
-    CopyWindowToVram(sAuxWindowsID, 2);
+    CopyWindowToVram(sSafariBallsWindowId, 2);
 }

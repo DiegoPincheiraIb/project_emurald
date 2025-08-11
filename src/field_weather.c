@@ -317,7 +317,7 @@ static void None_Init(void)
 {
     if (EXPANSION_VERSION_MINOR >= 9 && MapHasPreviewScreen_HandleQLState2(gMapHeader.regionMapSectionId, MPS_TYPE_FADE_IN) == FALSE)
     {
-        Weather_SetBlendCoeffs(8, 12); // Indoor shadows
+        Weather_SetBlendCoeffs(8, BASE_SHADOW_INTENSITY); // Indoor shadows
     }
     gWeatherPtr->noShadows = FALSE;
     gWeatherPtr->targetColorMapIndex = 0;

@@ -26,6 +26,9 @@
 #include "expansion_intro.h"
 #include "constants/rgb.h"
 #include "constants/battle_anim.h"
+#include "main_menu.h"
+#include "event_data.h"
+#include "constants/flags.h"
 
 /*
     The intro is grouped into the following scenes
@@ -1110,6 +1113,8 @@ static u8 SetUpCopyrightScreen(void)
         UpdatePaletteFade();
         gMain.state++;
         GameCubeMultiBoot_Main(&gMultibootProgramStruct);
+        if ((JOY_NEW(A_BUTTON)) || (JOY_NEW(L_BUTTON)) || (JOY_NEW(START_BUTTON)))
+            gMain.state = COPYRIGHT_START_FADE; // Skip the copyright screen if A, L or Start is pressed
         break;
     case COPYRIGHT_START_FADE:
         GameCubeMultiBoot_Main(&gMultibootProgramStruct);
@@ -1155,7 +1160,7 @@ static u8 SetUpCopyrightScreen(void)
 
 void CB2_InitCopyrightScreenAfterBootup(void)
 {
-    if (!SetUpCopyrightScreen())
+    if (gMain.state == 0)
     {
         SetSaveBlocksPointers(GetSaveBlocksPointersBaseOffset());
         ResetMenuAndMonGlobals();
@@ -1166,6 +1171,10 @@ void CB2_InitCopyrightScreenAfterBootup(void)
         SetPokemonCryStereo(gSaveBlock2Ptr->optionsSound);
         InitHeap(gHeap, HEAP_SIZE);
     }
+    if (FlagGet(FLAG_SKIP_INTRO))
+        CB2_InitMainMenu();
+    else
+        SetUpCopyrightScreen();
 }
 
 void CB2_InitCopyrightScreenAfterTitleScreen(void)
@@ -1178,7 +1187,7 @@ void CB2_InitCopyrightScreenAfterTitleScreen(void)
 void Task_Scene1_Load(u8 taskId)
 {
     SetVBlankCallback(NULL);
-    sIntroCharacterGender = MOD(Random(), GENDER_COUNT);
+    sIntroCharacterGender = gSaveBlock2Ptr->playerGender;
     IntroResetGpuRegs();
     SetGpuReg(REG_OFFSET_BG3VOFS, 0);
     SetGpuReg(REG_OFFSET_BG2VOFS, 80);
@@ -1875,12 +1884,15 @@ static void Task_Scene3_StartGroudon(u8 taskId)
 #define tTrigIdx data[6] // Re-used
 #define tPalIdx  data[7]
 
+// Treats gIntro3Bg_Pal as u8* and iterates by 1
+#define INTRO3_RAW_PTR(palId)(((void *) &gIntro3Bg_Pal) + palId)
+
 static void Task_Scene3_Groudon(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
 
     tTimer++;
-    if ((u16)(tState - 1) < 7 && tTimer % 2 == 0)
+    if ((tState >= 1 && tState <= 7) && tTimer % 2 == 0)
         tYShake ^= 3;
     PanFadeAndZoomScreen(tScreenX, tScreenY + tYShake, tZoom, 0);
     switch (tState)
@@ -1899,7 +1911,7 @@ static void Task_Scene3_Groudon(u8 taskId)
         if (--tDelay == 0)
         {
             tDelay = 2;
-            CpuCopy16(&gIntro3Bg_Pal[tPalIdx], &gPlttBufferFaded[BG_PLTT_ID(1) + 15], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(tPalIdx), &gPlttBufferFaded[BG_PLTT_ID(1) + 15], PLTT_SIZEOF(1));
             tPalIdx += 2;
             if (tPalIdx == 0x1EC)
                 tState++;
@@ -1916,7 +1928,7 @@ static void Task_Scene3_Groudon(u8 taskId)
         if (--tDelay == 0)
         {
             tDelay = 2;
-            CpuCopy16(&gIntro3Bg_Pal[tPalIdx], &gPlttBufferFaded[BG_PLTT_ID(1) + 15], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(tPalIdx), &gPlttBufferFaded[BG_PLTT_ID(1) + 15], PLTT_SIZEOF(1));
             tPalIdx -= 2;
             if (tPalIdx == 0x1E0)
             {
@@ -2158,7 +2170,7 @@ static void Task_Scene3_Kyogre(u8 taskId)
         if (--tDelay == 0)
         {
             tDelay = 4;
-            CpuCopy16(&gIntro3Bg_Pal[tPalIdx], &gPlttBufferFaded[BG_PLTT_ID(2) + 15], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(tPalIdx), &gPlttBufferFaded[BG_PLTT_ID(2) + 15], PLTT_SIZEOF(1));
             tPalIdx -= 2;
             if (tPalIdx == 0x1E0)
                 tState++;
@@ -2176,7 +2188,7 @@ static void Task_Scene3_Kyogre(u8 taskId)
         if (--tDelay == 0)
         {
             tDelay = 4;
-            CpuCopy16(&gIntro3Bg_Pal[tPalIdx], &gPlttBufferFaded[BG_PLTT_ID(2) + 15], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(tPalIdx), &gPlttBufferFaded[BG_PLTT_ID(2) + 15], PLTT_SIZEOF(1));
             tPalIdx += 2;
             if (tPalIdx == 0x1EE)
             {
@@ -2507,7 +2519,7 @@ static void SpriteCB_Lightning(struct Sprite *sprite)
         sprite->sPalIdx = 0x1C2;
         sprite->sState++;
     case 1:
-        CpuCopy16(&gIntro3Bg_Pal[sprite->sPalIdx], &gPlttBufferFaded[BG_PLTT_ID(5) + 13], PLTT_SIZEOF(1));
+        CpuCopy16(INTRO3_RAW_PTR(sprite->sPalIdx), &gPlttBufferFaded[BG_PLTT_ID(5) + 13], PLTT_SIZEOF(1));
         sprite->sPalIdx += 2;
         if (sprite->sPalIdx != 0x1CE)
             break;
@@ -2518,7 +2530,7 @@ static void SpriteCB_Lightning(struct Sprite *sprite)
         if (--sprite->sDelay == 0)
         {
             sprite->sDelay = 4;
-            CpuCopy16(&gIntro3Bg_Pal[sprite->sPalIdx], &gPlttBufferFaded[BG_PLTT_ID(5) + 13], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(sprite->sPalIdx), &gPlttBufferFaded[BG_PLTT_ID(5) + 13], PLTT_SIZEOF(1));
             sprite->sPalIdx -= 2;
             if (sprite->sPalIdx == 0x1C0)
                 DestroySprite(sprite);
@@ -2621,7 +2633,7 @@ static void Task_RayquazaAttack(u8 taskId)
     case 0:
         if ((data[2] & 1) != 0)
         {
-            CpuCopy16(&gIntro3Bg_Pal[0x1A2 + data[1] * 2], &gPlttBufferFaded[BG_PLTT_ID(5) + 14], PLTT_SIZEOF(1));
+            CpuCopy16(INTRO3_RAW_PTR(0x1A2 + data[1] * 2), &gPlttBufferFaded[BG_PLTT_ID(5) + 14], PLTT_SIZEOF(1));
             data[1]++;
         }
         if (data[1] == 6)
@@ -2636,7 +2648,7 @@ static void Task_RayquazaAttack(u8 taskId)
         {
             if ((data[2] & 1) != 0)
             {
-                CpuCopy16(&gIntro3Bg_Pal[0x1A2 + data[1] * 2], &gPlttBufferFaded[BG_PLTT_ID(5) + 8], PLTT_SIZEOF(1));
+                CpuCopy16(INTRO3_RAW_PTR(0x1A2 + data[1] * 2), &gPlttBufferFaded[BG_PLTT_ID(5) + 8], PLTT_SIZEOF(1));
                 data[1]++;
             }
             if (data[1] == 6)
@@ -2655,7 +2667,7 @@ static void Task_RayquazaAttack(u8 taskId)
         {
             if ((data[2] & 1) != 0)
             {
-                CpuCopy16(&gIntro3Bg_Pal[0x182 + data[1] * 2], &gPlttBufferFaded[BG_PLTT_ID(5) + 12], PLTT_SIZEOF(1));
+                CpuCopy16(INTRO3_RAW_PTR(0x182 + data[1] * 2), &gPlttBufferFaded[BG_PLTT_ID(5) + 12], PLTT_SIZEOF(1));
                 data[1]++;
             }
             if (data[1] == 6)
@@ -2679,9 +2691,9 @@ static void Task_RayquazaAttack(u8 taskId)
             if (--data[3] != 0)
             {
                 BlendPalette(BG_PLTT_ID(5), 16, data[3], RGB(9, 10, 10));
-                CpuCopy16(&gIntro3Bg_Pal[428], &gPlttBufferFaded[BG_PLTT_ID(5) + 14], PLTT_SIZEOF(1));
-                CpuCopy16(&gIntro3Bg_Pal[428], &gPlttBufferFaded[BG_PLTT_ID(5) + 8], PLTT_SIZEOF(1));
-                CpuCopy16(&gIntro3Bg_Pal[396], &gPlttBufferFaded[BG_PLTT_ID(5) + 12], PLTT_SIZEOF(1));
+                CpuCopy16(INTRO3_RAW_PTR(428), &gPlttBufferFaded[BG_PLTT_ID(5) + 14], PLTT_SIZEOF(1));
+                CpuCopy16(INTRO3_RAW_PTR(428), &gPlttBufferFaded[BG_PLTT_ID(5) + 8], PLTT_SIZEOF(1));
+                CpuCopy16(INTRO3_RAW_PTR(396), &gPlttBufferFaded[BG_PLTT_ID(5) + 12], PLTT_SIZEOF(1));
             }
             else
             {

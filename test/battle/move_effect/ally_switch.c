@@ -185,10 +185,25 @@ DOUBLE_BATTLE_TEST("Ally Switch doesn't make self-targeting status moves fail")
     }
 }
 
-DOUBLE_BATTLE_TEST("Ally Switch increases the Protect-like moves counter")
+DOUBLE_BATTLE_TEST("Ally Switch doesn't increase the Protect-like moves counter (Gen5-8)")
 {
     GIVEN {
-        ASSUME(B_ALLY_SWITCH_FAIL_CHANCE >= GEN_9);
+        WITH_CONFIG(GEN_ALLY_SWITCH_FAIL_CHANCE, GEN_8);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_ALLY_SWITCH); }
+    } THEN {
+        EXPECT(gDisableStructs[B_POSITION_PLAYER_RIGHT].protectUses == 0);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Ally Switch increases the Protect-like moves counter (Gen9+)")
+{
+    GIVEN {
+        WITH_CONFIG(GEN_ALLY_SWITCH_FAIL_CHANCE, GEN_9);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
@@ -308,6 +323,28 @@ DOUBLE_BATTLE_TEST("Ally Switch swaps Illusion data")
         TURN { MOVE(playerLeft, MOVE_ALLY_SWITCH); }
     } THEN {
         EXPECT(&gPlayerParty[2] == gBattleStruct->illusion[0].mon);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Ally switch updates last used moves for Mimic")
+{
+    GIVEN {
+        PLAYER(SPECIES_XATU)     { Speed(100); }
+        PLAYER(SPECIES_RIOLU)    { Speed(150); }
+        OPPONENT(SPECIES_FEAROW) { Speed(20); }
+        OPPONENT(SPECIES_ARON)   { Speed(30); }
+    } WHEN {
+        TURN { MOVE(playerRight, MOVE_FAKE_OUT, target: opponentRight); MOVE(playerLeft, MOVE_ALLY_SWITCH);
+               MOVE(opponentLeft, MOVE_MIMIC, target: playerLeft);
+             }
+    } SCENE {
+        MESSAGE("Riolu used Fake Out!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FAKE_OUT, playerRight);
+        MESSAGE("Xatu used Ally Switch!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ALLY_SWITCH, playerLeft);
+        MESSAGE("Xatu and Riolu switched places!");
+        MESSAGE("The opposing Fearow used Mimic!");
+        MESSAGE("The opposing Fearow learned Fake Out!");
     }
 }
 

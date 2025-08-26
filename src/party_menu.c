@@ -438,6 +438,7 @@ static void DisplayPartyMenuForgotMoveMessage(u8);
 static void Task_PartyMenuReplaceMove(u8);
 static void Task_StopLearningMoveYesNo(u8);
 static void Task_HandleStopLearningMoveYesNoInput(u8);
+static void Task_DidNotLearnMove(u8);
 static void Task_TryLearningNextMoveAfterText(u8);
 static void BufferMonStatsToTaskData(struct Pokemon *, s16 *);
 static void UpdateMonDisplayInfoAfterRareCandy(u8, struct Pokemon *);
@@ -1438,6 +1439,9 @@ void Task_HandleChooseMonInput(u8 taskId)
         case B_BUTTON: // Selected Cancel / pressed B
             HandleChooseMonCancel(taskId, slotPtr);
             break;
+        case SELECT_BUTTON: //Quick Swap
+            DestroyTask(taskId);
+            break;
         case START_BUTTON:
             if (sPartyMenuInternal->chooseHalf)
             {
@@ -1687,6 +1691,21 @@ static void Task_HandleCancelChooseMonYesNoInput(u8 taskId)
     }
 }
 
+static bool8 IsInvalidPartyMenuActionType(u8 partyMenuType)
+{
+    return (partyMenuType == PARTY_ACTION_SEND_OUT
+         || partyMenuType == PARTY_ACTION_CANT_SWITCH
+         || partyMenuType == PARTY_ACTION_USE_ITEM
+         || partyMenuType == PARTY_ACTION_ABILITY_PREVENTS
+         || partyMenuType == PARTY_ACTION_GIVE_ITEM
+         || partyMenuType == PARTY_ACTION_GIVE_PC_ITEM
+         || partyMenuType == PARTY_ACTION_GIVE_MAILBOX_MAIL
+         || partyMenuType == PARTY_ACTION_SOFTBOILED
+         || partyMenuType == PARTY_ACTION_CHOOSE_AND_CLOSE
+         || partyMenuType == PARTY_ACTION_MOVE_TUTOR
+         || partyMenuType == PARTY_ACTION_MINIGAME);
+}
+
 static u16 PartyMenuButtonHandler(s8 *slotPtr)
 {
     s8 movementDir;
@@ -1723,7 +1742,21 @@ static u16 PartyMenuButtonHandler(s8 *slotPtr)
 
     if (JOY_NEW(START_BUTTON))
         return START_BUTTON;
-
+    
+    if (JOY_NEW(SELECT_BUTTON) && CalculatePlayerPartyCount() >= 2 && !IsInvalidPartyMenuActionType(gPartyMenu.action))
+    {
+        if (gPartyMenu.menuType != PARTY_MENU_TYPE_FIELD)
+            return 0;
+        if (*slotPtr == PARTY_SIZE + 1)
+            return 0;
+        if (gPartyMenu.action != PARTY_ACTION_SWITCH)
+        {
+            CreateTask(CursorCb_Switch, 1);
+            return SELECT_BUTTON;
+        }
+        return A_BUTTON; // Select is allowed to act as the A Button while CursorCb_Switch is active.
+    }
+    
     if (movementDir && gPlayerPartyCount != 0)
     {
         UpdateCurrentPartySelection(slotPtr, movementDir);
@@ -3366,7 +3399,7 @@ static void CursorCb_Give(u8 taskId)
 
 static void CB2_SelectBagItemToGive(void)
 {
-    if (InBattlePyramid() == FALSE)
+    if (CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE)
         GoToBagMenu(ITEMMENULOCATION_PARTY, POCKETS_COUNT, CB2_GiveHoldItem);
     else
         GoToBattlePyramidBagMenu(PYRAMIDBAG_LOC_PARTY, CB2_GiveHoldItem);
@@ -4566,6 +4599,12 @@ void CB2_ShowPartyMenuForItemUse(void)
     u8 msgId;
     TaskFunc task;
 
+    if (gPartyMenu.data1 == DATA1_PARTY_MENU_FROM_FIELD)
+    {
+        callback = CB2_ReturnToField;
+        gPartyMenu.data1 = 0;
+    }
+
     if (gMain.inBattle)
     {
         menuType = PARTY_MENU_TYPE_IN_BATTLE;
@@ -4606,7 +4645,7 @@ void CB2_ShowPartyMenuForItemUse(void)
 
 static void CB2_ReturnToBagMenu(void)
 {
-    if (InBattlePyramid() == FALSE)
+    if (CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE)
         GoToBagMenu(ITEMMENULOCATION_LAST, POCKETS_COUNT, NULL);
     else
         GoToBattlePyramidBagMenu(PYRAMIDBAG_LOC_PREV, gPyramidBagMenuState.exitCallback);
@@ -5459,8 +5498,8 @@ void ItemUseCB_TMHM(u8 taskId, TaskFunc task)
     }
     else
     {
-        DisplayLearnMoveMessage(gText_PkmnNeedsToReplaceMove);
-        gTasks[taskId].func = Task_ReplaceMoveYesNo;
+        DisplayPartyMenuMessage(gText_WhichMoveToForget, TRUE); //Jumps straight to move-replacing
+        gTasks[taskId].func = Task_ShowSummaryScreenToForgetMove;
     }
 }
 
@@ -5531,7 +5570,7 @@ static void Task_HandleReplaceMoveYesNoInput(u8 taskId)
         PlaySE(SE_SELECT);
         // fallthrough
     case 1:
-        StopLearningMovePrompt(taskId);
+        Task_DidNotLearnMove(taskId);
         break;
     }
 }
@@ -5620,37 +5659,43 @@ static void Task_StopLearningMoveYesNo(u8 taskId)
 
 static void Task_HandleStopLearningMoveYesNoInput(u8 taskId)
 {
-    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-
     switch (Menu_ProcessInputNoWrapClearOnChoose())
     {
-    case 0:
-        GetMonNickname(mon, gStringVar1);
-        StringCopy(gStringVar2, GetMoveName(gPartyMenu.data1));
-        StringExpandPlaceholders(gStringVar4, gText_MoveNotLearned);
-        DisplayPartyMenuMessage(gStringVar4, TRUE);
-        if (gPartyMenu.learnMoveState == 1)
-        {
-            gTasks[taskId].func = Task_TryLearningNextMoveAfterText;
-        }
-        else
-        {
-            if (gPartyMenu.learnMoveState == 2) // never occurs
-                gSpecialVar_Result = FALSE;
-            gTasks[taskId].func = Task_ClosePartyMenuAfterText;
-        }
-        break;
     case MENU_B_PRESSED:
         PlaySE(SE_SELECT);
         // fallthrough
-    case 1:
-        GetMonNickname(mon, gStringVar1);
-        StringCopy(gStringVar2, GetMoveName(gPartyMenu.data1));
-        DisplayLearnMoveMessage(gText_PkmnNeedsToReplaceMove);
-        gTasks[taskId].func = Task_ReplaceMoveYesNo;
+    case 0:
+        gTasks[taskId].func = Task_DidNotLearnMove;
         break;
+    case 1:
+        gTasks[taskId].func = Task_ShowSummaryScreenToForgetMove;
+	break;
     }
 }
+
+static void Task_DidNotLearnMove(u8 taskId)
+{
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+
+    GetMonNickname(mon, gStringVar1);
+    StringCopy(gStringVar2, GetMoveName(gPartyMenu.data1));
+    if(CheckIfItemIsTMHMOrEvolutionStone(gSpecialVar_ItemId) || gPartyMenu.action == PARTY_ACTION_MOVE_TUTOR)
+        StringExpandPlaceholders(gStringVar4, gText_MoveNotLearned);
+    else
+        StringExpandPlaceholders(gStringVar4, gText_MoveCanBeRelearned);
+    DisplayPartyMenuMessage(gStringVar4, TRUE);
+    if (gPartyMenu.learnMoveState == 1)
+    {
+        gTasks[taskId].func = Task_TryLearningNextMoveAfterText;
+    }
+    else
+    {
+        if (gPartyMenu.learnMoveState == 2) // never occurs
+            gSpecialVar_Result = FALSE;
+        gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+    }
+}
+
 
 static void Task_TryLearningNextMoveAfterText(u8 taskId)
 {
@@ -6854,7 +6899,7 @@ void CB2_PartyMenuFromStartMenu(void)
 // As opposted to by selecting Give in the party menu, which is handled by CursorCb_Give
 void CB2_ChooseMonToGiveItem(void)
 {
-    MainCallback callback = (InBattlePyramid() == FALSE) ? CB2_ReturnToBagMenu : CB2_ReturnToPyramidBagMenu;
+    MainCallback callback = (CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE) ? CB2_ReturnToBagMenu : CB2_ReturnToPyramidBagMenu;
     InitPartyMenu(PARTY_MENU_TYPE_FIELD, PARTY_LAYOUT_SINGLE, PARTY_ACTION_GIVE_ITEM, FALSE, PARTY_MSG_GIVE_TO_WHICH_MON, Task_HandleChooseMonInput, callback);
     gPartyMenu.bagItem = gSpecialVar_ItemId;
 }

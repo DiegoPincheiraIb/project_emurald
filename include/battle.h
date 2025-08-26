@@ -169,7 +169,8 @@ struct ProtectStruct
     u16 activateOpportunist:2; // 2 - to copy stats. 1 - stats copied (do not repeat). 0 - no stats to copy
     u16 usedAllySwitch:1;
     u16 lashOutAffected:1;
-    u16 padding:4;
+    u16 assuranceDoubled:1;
+    u16 padding:3;
     // End of 16-bit bitfield
     u16 physicalDmg;
     u16 specialDmg;
@@ -588,7 +589,8 @@ struct BattlerState
     u32 pursuitTarget:1;
     u32 stompingTantrumTimer:2;
     u32 canPickupItem:1;
-    u32 padding:16;
+    u32 itemCanBeKnockedOff:1;
+    u32 padding:15;
     // End of Word
 };
 
@@ -665,7 +667,8 @@ struct BattleStruct
     u8 anyMonHasTransformed:1; // Only used in battle_tv.c
     u8 multipleSwitchInState:2;
     u8 multipleSwitchInCursor:3;
-    u8 padding1:2;
+    u8 sleepClauseNotBlocked:1;
+    u8 padding1:1;
     u8 multipleSwitchInSortedBattlers[MAX_BATTLERS_COUNT];
     void (*savedCallback)(void);
     u16 usedHeldItems[PARTY_SIZE][NUM_BATTLE_SIDES]; // For each party member and side. For harvest, recycle

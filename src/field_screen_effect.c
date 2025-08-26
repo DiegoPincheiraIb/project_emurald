@@ -20,6 +20,7 @@
 #include "link_rfu.h"
 #include "load_save.h"
 #include "main.h"
+#include "map_preview_screen.h"
 #include "menu.h"
 #include "mirage_tower.h"
 #include "metatile_behavior.h"
@@ -120,7 +121,10 @@ void WarpFadeOutScreen(void)
         FadeScreen(FADE_TO_BLACK, 0);
         break;
     case 1:
-        FadeScreen(FADE_TO_WHITE, 0);
+        if (MapHasPreviewScreen_HandleQLState2(GetDestinationWarpMapSectionId(), MPS_TYPE_CAVE))
+            FadeScreen(FADE_TO_BLACK, 0);
+        else
+            FadeScreen(FADE_TO_WHITE, 0);
     }
 }
 
@@ -528,6 +532,7 @@ void DoDiveWarp(void)
     TryFadeOutOldMapMusic();
     WarpFadeOutScreen();
     PlayRainStoppingSoundEffect();
+    SetFollowerNPCData(FNPC_DATA_COME_OUT_DOOR, FNPC_DOOR_NONE);
     gFieldCallback = FieldCB_DefaultWarpExit;
     CreateTask(Task_WarpAndLoadMap, 10);
 }
@@ -1570,12 +1575,14 @@ static void Task_ExitStairs(u8 taskId)
             tState++;
         break;
     }
+    gObjectEvents[gPlayerAvatar.objectEventId].noShadow = FALSE;
 }
 
 static void ForceStairsMovement(u32 metatileBehavior, s16 *speedX, s16 *speedY)
 {
     ObjectEventForceSetHeldMovement(&gObjectEvents[gPlayerAvatar.objectEventId], GetWalkInPlaceNormalMovementAction(GetPlayerFacingDirection()));
     GetStairsMovementDirection(metatileBehavior, speedX, speedY);
+    gObjectEvents[gPlayerAvatar.objectEventId].noShadow = TRUE;
 }
 #undef tSpeedX
 #undef tSpeedY
@@ -1619,6 +1626,7 @@ static void Task_StairWarp(u8 taskId)
         LockPlayerFieldControls();
         FreezeObjectEvents();
         CameraObjectFreeze();
+        HideFollowerForFieldEffect();
         tState++;
         break;
     case 1:

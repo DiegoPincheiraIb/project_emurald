@@ -1875,6 +1875,7 @@
 	@ Displays a multichoice box from which the user can choose a selection, and blocks script execution until a selection is made.
 	@ Lists of options are provided in argv.
 	@ If ignoreBPress is set to a non-zero value, then the user will not be allowed to back out of the multichoice with the B button.
+	@ For a simple menu supply DYN_MULTICHOICE_CB_NONE in callbacks.
 	.macro dynmultichoice left:req, top:req, ignoreBPress:req, maxBeforeScroll:req, initialSelected:req, callbacks:req argv:vararg
 	_dynmultichoice \left, \top, \ignoreBPress, \maxBeforeScroll, FALSE, \initialSelected, \callbacks, \argv
 	.endm
@@ -2638,4 +2639,17 @@
 	.macro changefollowerbattler battlePartner:req
 	callnative ScriptChangeFollowerNPCBattlePartner
 	.2byte \battlePartner
+	.endm
+
+@ Bivurnum FRLG Map Previews
+	@ Show a map preview for the current map with the WEATHER type.
+	.macro mappreview
+	fadescreen FADE_TO_BLACK
+	callnative Script_MapPreview
+	waitstate
+	.endm
+
+	@ Show the current map's name popup.
+	.macro mappopup
+	callnative Script_MapPopUp
 	.endm

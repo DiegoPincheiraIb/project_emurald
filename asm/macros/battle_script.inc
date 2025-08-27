@@ -1440,9 +1440,8 @@
 	callnative BS_TryRevertWeatherForm
 	.endm
 
-	.macro trysetoctolock battler:req, failInstr:req
+	.macro trysetoctolock failInstr:req
 	callnative BS_TrySetOctolock
-	.byte \battler
 	.4byte \failInstr
 	.endm
 
@@ -1738,6 +1737,10 @@
 	.byte \battler
 	.endm
     
+    .macro resetterrainabilityflags
+    callnative BS_ResetTerrainAbilityFlags
+    .endm
+
     .macro resetterrainabilityflags
     callnative BS_ResetTerrainAbilityFlags
     .endm

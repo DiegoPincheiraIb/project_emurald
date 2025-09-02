@@ -1433,22 +1433,12 @@ enum MapType GetLastUsedWarpMapType(void)
     return GetMapTypeByWarpData(&gLastUsedWarp);
 }
 
-u8 GetLastUsedWarpMapSectionId(void)
+enum MapType GetLastUsedWarpMapSectionId(void)
 {
     return Overworld_GetMapHeaderByGroupAndId(gLastUsedWarp.mapGroup, gLastUsedWarp.mapNum)->regionMapSectionId;
 }
 
-u8 GetDestinationWarpMapSectionId(void)
-{
-    return Overworld_GetMapHeaderByGroupAndId(sWarpDestination.mapGroup, sWarpDestination.mapNum)->regionMapSectionId;
-}
-
-u8 GetLastUsedWarpMapSectionId(void)
-{
-    return Overworld_GetMapHeaderByGroupAndId(gLastUsedWarp.mapGroup, gLastUsedWarp.mapNum)->regionMapSectionId;
-}
-
-u8 GetDestinationWarpMapSectionId(void)
+enum MapType GetDestinationWarpMapSectionId(void)
 {
     return Overworld_GetMapHeaderByGroupAndId(sWarpDestination.mapGroup, sWarpDestination.mapNum)->regionMapSectionId;
 }

@@ -893,14 +893,6 @@ void ItemUseOutOfBattle_DynamaxCandy(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
-void ItemUseOutOfBattle_TMHM(u8 taskId)
-{
-    if (GetItemTMHMIndex(gSpecialVar_ItemId) > NUM_TECHNICAL_MACHINES)
-        DisplayItemMessage(taskId, FONT_NORMAL, sText_BootedUpHM, BootUpSoundTMHM); // HM
-    else
-        DisplayItemMessage(taskId, FONT_NORMAL, sText_BootedUpTM, BootUpSoundTMHM); // TM
-}
-
 static void BootUpSoundTMHM(u8 taskId)
 {
     PlaySE(SE_PC_LOGIN);
@@ -908,6 +900,14 @@ static void BootUpSoundTMHM(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
+
+void ItemUseOutOfBattle_TMHM(u8 taskId)
+{
+    if (GetItemTMHMIndex(gSpecialVar_ItemId) > NUM_TECHNICAL_MACHINES)
+        DisplayItemMessage(taskId, FONT_NORMAL, sText_BootedUpHM, BootUpSoundTMHM); // HM
+    else
+        DisplayItemMessage(taskId, FONT_NORMAL, sText_BootedUpTM, BootUpSoundTMHM); // TM
+}
 static void RemoveUsedItem(void)
 {
     RemoveBagItem(gSpecialVar_ItemId, 1);

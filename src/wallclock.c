@@ -692,13 +692,13 @@ void CB2_StartWallClock(void)
     DecompressDataWithHeaderVram(gWallClockStart_Tilemap, (u16 *)BG_SCREEN_ADDR(7));
 
     taskId = CreateTask(Task_SetClock_WaitFadeIn, 0);
-    gTasks[taskId].tHours = 10;
-    gTasks[taskId].tMinutes = 0;
+    gTasks[taskId].tHours = gLocalTime.hours;
+    gTasks[taskId].tMinutes = gLocalTime.minutes;
     gTasks[taskId].tMoveDir = 0;
-    gTasks[taskId].tPeriod = 0;
+    gTasks[taskId].tPeriod = gTasks[taskId].tHours / 12;
     gTasks[taskId].tMoveSpeed = 0;
-    gTasks[taskId].tMinuteHandAngle = 0;
-    gTasks[taskId].tHourHandAngle = 300;
+    gTasks[taskId].tMinuteHandAngle = gTasks[taskId].tMinutes * 6;
+    gTasks[taskId].tHourHandAngle = (gTasks[taskId].tHours % 12) * 30 + (gTasks[taskId].tMinutes / 10) * 5;
 
     spriteId = CreateSprite(&sSpriteTemplate_MinuteHand, 120, 80, 1);
     gSprites[spriteId].sTaskId = taskId;
@@ -736,7 +736,14 @@ void CB2_ViewWallClock(void)
     DecompressDataWithHeaderVram(gWallClockView_Tilemap, (u16 *)BG_SCREEN_ADDR(7));
 
     taskId = CreateTask(Task_ViewClock_WaitFadeIn, 0);
-    InitClockWithRtc(taskId);
+    gTasks[taskId].tHours = Rtc_GetCurrentHour();
+    gTasks[taskId].tMinutes = Rtc_GetCurrentMinute();
+    gTasks[taskId].tMinuteHandAngle = gTasks[taskId].tMinutes * 6;
+    gTasks[taskId].tHourHandAngle = (gTasks[taskId].tHours % 12) * 30 + (gTasks[taskId].tMinutes / 10) * 5;
+    if (Rtc_GetCurrentHour() < 12)
+        gTasks[taskId].tPeriod = PERIOD_AM;
+    else
+        gTasks[taskId].tPeriod = PERIOD_PM;
     if (gTasks[taskId].tPeriod == PERIOD_AM)
     {
         angle1 = 45;
@@ -882,9 +889,16 @@ static void Task_ViewClock_WaitFadeIn(u8 taskId)
 
 static void Task_ViewClock_HandleInput(u8 taskId)
 {
-    InitClockWithRtc(taskId);
-    if (JOY_NEW(A_BUTTON | B_BUTTON))
-        gTasks[taskId].func = Task_ViewClock_FadeOut;
+    if (FlagGet(FLAG_IS_RTC_ENABLED))
+    {
+        if (JOY_NEW(A_BUTTON | B_BUTTON))
+            gTasks[taskId].func = Task_ViewClock_FadeOut;}
+    else
+    {
+        InitClockWithRtc(taskId);
+        if (JOY_NEW(A_BUTTON | B_BUTTON))
+            gTasks[taskId].func = Task_ViewClock_FadeOut;
+    }
 }
 
 static void Task_ViewClock_FadeOut(u8 taskId)

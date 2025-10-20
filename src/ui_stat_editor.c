@@ -912,6 +912,8 @@ static void ChangeAndUpdateStat()
         if (tempDifference < 0)
             tempDifference = 0;
         newDifference = (u32) tempDifference;
+        if (newDifference <= 0)
+            newDifference = 1;
         SetMonData(ReturnPartyMon(), MON_DATA_HP, &newDifference);
     }
 

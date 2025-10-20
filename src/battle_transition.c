@@ -495,7 +495,7 @@ static const TransitionStateFunc sPokeballsTrail_Funcs[] =
 
 #define NUM_POKEBALL_TRAILS 5
 static const s16 sPokeballsTrail_StartXCoords[2] = { -16, DISPLAY_WIDTH + 16 };
-static const s16 sPokeballsTrail_Delays[NUM_POKEBALL_TRAILS] = {0, 32, 64, 18, 48};
+static const s16 sPokeballsTrail_Delays[NUM_POKEBALL_TRAILS] = {0, 16, 32, 8, 24};
 static const s16 sPokeballsTrail_Speeds[2] = {8, -8};
 
 static const TransitionStateFunc sClockwiseWipe_Funcs[] =
@@ -716,8 +716,8 @@ static const TransitionStateFunc sWhiteBarsFade_Funcs[] =
     WhiteBarsFade_End
 };
 
-#define NUM_WHITE_BARS 8
-static const s16 sWhiteBarsFade_StartDelays[NUM_WHITE_BARS] = {0, 20, 15, 40, 10, 25, 35, 5};
+#define NUM_WHITE_BARS 6
+static const s16 sWhiteBarsFade_StartDelays[NUM_WHITE_BARS] = {0, 9, 15, 6, 12, 3};
 
 static const TransitionStateFunc sGridSquares_Funcs[] =
 {
@@ -749,7 +749,7 @@ static const s16 sAngledWipes_MoveData[NUM_ANGLED_WIPES][5] =
     {168,           DISPLAY_HEIGHT, 48,             0,              1},
 };
 
-static const s16 sAngledWipes_EndDelays[NUM_ANGLED_WIPES] = {8, 4, 2, 1, 1, 1, 0};
+static const s16 sAngledWipes_EndDelays[NUM_ANGLED_WIPES] = {1, 1, 1, 1, 1, 1, 0};
 
 static const TransitionStateFunc sTransitionIntroFuncs[] =
 {
@@ -1101,7 +1101,7 @@ static void Task_Intro(u8 taskId)
     if (gTasks[taskId].tState == 0)
     {
         gTasks[taskId].tState++;
-        CreateIntroTask(0, 0, 3, 2, 2);
+        CreateIntroTask(0, 0, 2, 2, 2);
     }
     else if (IsIntroTaskDone())
     {
@@ -1599,13 +1599,13 @@ static bool8 PatternWeave_Blend1(struct Task *task)
     if (task->tBlendDelay == 0 || --task->tBlendDelay == 0)
     {
         task->tBlendTarget2++;
-        task->tBlendDelay = 2;
+        task->tBlendDelay = 1;
     }
     sTransitionData->BLDALPHA = BLDALPHA_BLEND(task->tBlendTarget2, task->tBlendTarget1);
     if (task->tBlendTarget2 > 15)
         task->tState++;
-    task->tSinIndex += 8;
-    task->tAmplitude -= 256;
+    task->tSinIndex += 12;
+    task->tAmplitude -= 384;
 
     SetSinWave((s16*)gScanlineEffectRegBuffers[0], 0, task->tSinIndex, 132, task->tAmplitude >> 8, DISPLAY_HEIGHT);
 
@@ -1619,13 +1619,13 @@ static bool8 PatternWeave_Blend2(struct Task *task)
     if (task->tBlendDelay == 0 || --task->tBlendDelay == 0)
     {
         task->tBlendTarget1--;
-        task->tBlendDelay = 2;
+        task->tBlendDelay = 1;
     }
     sTransitionData->BLDALPHA = BLDALPHA_BLEND(task->tBlendTarget2, task->tBlendTarget1);
     if (task->tBlendTarget1 == 0)
         task->tState++;
-    task->tSinIndex += 8;
-    task->tAmplitude -= 256;
+    task->tSinIndex += 12;
+    task->tAmplitude -= 384;
 
     SetSinWave((s16*)gScanlineEffectRegBuffers[0], 0, task->tSinIndex, 132, task->tAmplitude >> 8, DISPLAY_HEIGHT);
 
@@ -1678,7 +1678,7 @@ static bool8 WeatherTrio_WaitFade(struct Task *task)
 static bool8 PatternWeave_CircularMask(struct Task *task)
 {
     sTransitionData->VBlank_DMA = FALSE;
-    if (task->tRadiusDelta < (4 << 8))
+    if (task->tRadiusDelta < (8 << 8))
         task->tRadiusDelta += 128; // 256 is 1 unit of speed. Speed up every other frame (128 / 256)
     if (task->tRadius != 0)
     {
@@ -1901,7 +1901,7 @@ static bool8 ClockwiseWipe_TopRight(struct Task *task)
         gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX + 1) | ((DISPLAY_WIDTH / 2) << 8);
     } while (!UpdateBlackWipe(sTransitionData->data, TRUE, TRUE));
 
-    sTransitionData->tWipeEndX += 16;
+    sTransitionData->tWipeEndX += 32;
     if (sTransitionData->tWipeEndX >= DISPLAY_WIDTH)
     {
         sTransitionData->tWipeEndY = 0;
@@ -1932,7 +1932,7 @@ static bool8 ClockwiseWipe_Right(struct Task *task)
         finished = UpdateBlackWipe(sTransitionData->data, TRUE, TRUE);
     }
 
-    sTransitionData->tWipeEndY += 8;
+    sTransitionData->tWipeEndY += 16;
     if (sTransitionData->tWipeEndY >= DISPLAY_HEIGHT)
     {
         sTransitionData->tWipeEndX = DISPLAY_WIDTH;
@@ -1958,7 +1958,7 @@ static bool8 ClockwiseWipe_Bottom(struct Task *task)
         gScanlineEffectRegBuffers[0][sTransitionData->tWipeCurrY] = (sTransitionData->tWipeCurrX << 8) | DISPLAY_WIDTH;
     } while (!UpdateBlackWipe(sTransitionData->data, TRUE, TRUE));
 
-    sTransitionData->tWipeEndX -= 16;
+    sTransitionData->tWipeEndX -= 32;
     if (sTransitionData->tWipeEndX <= 0)
     {
         sTransitionData->tWipeEndY = DISPLAY_HEIGHT;
@@ -1991,7 +1991,7 @@ static bool8 ClockwiseWipe_Left(struct Task *task)
         finished = UpdateBlackWipe(sTransitionData->data, TRUE, TRUE);
     }
 
-    sTransitionData->tWipeEndY -= 8;
+    sTransitionData->tWipeEndY -= 16;
     if (sTransitionData->tWipeEndY <= 0)
     {
         sTransitionData->tWipeEndX = 0;
@@ -2104,7 +2104,7 @@ static bool8 Ripple_Main(struct Task *task)
         gScanlineEffectRegBuffers[0][i] = sTransitionData->cameraY + Sin(sinIndex & 0xffff, amplitude);
     }
 
-    if (++task->tTimer == 81)
+    if (++task->tTimer == 41)
     {
         task->tFadeStarted++;
         BeginNormalPaletteFade(PALETTES_ALL, -2, 0, 16, RGB_BLACK);
@@ -3665,7 +3665,7 @@ static bool8 WhiteBarsFade_StartBars(struct Task *task)
     struct Sprite *sprite;
     memcpy(delays, sWhiteBarsFade_StartDelays, sizeof(sWhiteBarsFade_StartDelays));
 
-    for (i = 0, posY = 0; i < NUM_WHITE_BARS; i++, posY += DISPLAY_HEIGHT / NUM_WHITE_BARS)
+    for (i = 0, posY = 0; i < NUM_WHITE_BARS; i++, posY += 27)
     {
         sprite = &gSprites[CreateInvisibleSprite(SpriteCB_WhiteBarFade)];
         sprite->x = DISPLAY_WIDTH;
@@ -3684,7 +3684,7 @@ static bool8 WhiteBarsFade_StartBars(struct Task *task)
 static bool8 WhiteBarsFade_WaitBars(struct Task *task)
 {
     sTransitionData->VBlank_DMA = 0;
-    if (sTransitionData->counter >= NUM_WHITE_BARS)
+    if (sTransitionData->counter >= NUM_WHITE_BARS - 1)
     {
         BlendPalettes(PALETTES_ALL, 16, RGB_WHITE);
         task->tState++;
@@ -3704,6 +3704,7 @@ static bool8 WhiteBarsFade_BlendToBlack(struct Task *task)
     sTransitionData->BLDY = 0;
     sTransitionData->BLDCNT = 0xFF;
     sTransitionData->WININ = WININ_WIN0_ALL;
+    sTransitionData->counter = 0;
 
     SetVBlankCallback(VBlankCB_WhiteBarsFade_Blend);
 
@@ -3713,12 +3714,14 @@ static bool8 WhiteBarsFade_BlendToBlack(struct Task *task)
 
 static bool8 WhiteBarsFade_End(struct Task *task)
 {
-   if (++sTransitionData->BLDY > 16)
-   {
-       FadeScreenBlack();
-       DestroyTask(FindTaskIdByFunc(Task_WhiteBarsFade));
-   }
-   return FALSE;
+    sTransitionData->counter += 480;
+    sTransitionData->BLDY = sTransitionData->counter >> 8;
+    if (++sTransitionData->BLDY > 16)
+    {
+        FadeScreenBlack();
+        DestroyTask(FindTaskIdByFunc(Task_WhiteBarsFade));
+    }
+    return FALSE;
 }
 
 static void VBlankCB_WhiteBarsFade(void)
@@ -3747,7 +3750,10 @@ static void VBlankCB_WhiteBarsFade_Blend(void)
 
 static void HBlankCB_WhiteBarsFade(void)
 {
-    REG_BLDY = gScanlineEffectRegBuffers[1][REG_VCOUNT];
+    vu16 index = REG_VCOUNT;
+    if (index == 227)     
+        index = 0;
+    REG_BLDY = gScanlineEffectRegBuffers[1][index];
 }
 
 static void SpriteCB_WhiteBarFade(struct Sprite *sprite)
@@ -3763,7 +3769,8 @@ static void SpriteCB_WhiteBarFade(struct Sprite *sprite)
         u16 i;
         u16 *ptr1 = &gScanlineEffectRegBuffers[0][sprite->y];
         u16 *ptr2 = &gScanlineEffectRegBuffers[0][sprite->y + DISPLAY_HEIGHT];
-        for (i = 0; i < DISPLAY_HEIGHT / NUM_WHITE_BARS; i++)
+        u32 stripeWidth = sprite->sIsMainSprite ? 0x19 : 0x1B;
+        for (i = 0; i < stripeWidth; i++)
         {
             ptr1[i] = sprite->sFade >> 8;
             ptr2[i] = (u8)sprite->x;
@@ -3771,8 +3778,8 @@ static void SpriteCB_WhiteBarFade(struct Sprite *sprite)
         if (sprite->x == 0 && sprite->sFade == FADE_TARGET)
             sprite->sFinished = TRUE;
 
-        sprite->x -= 16;
-        sprite->sFade += FADE_TARGET / 32;
+        sprite->x -= 24;
+        sprite->sFade += 192;
 
         if (sprite->x < 0)
             sprite->x = 0;

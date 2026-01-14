@@ -1350,25 +1350,14 @@ static u16 RenderText(struct TextPrinter *textPrinter)
                 case EXT_CTRL_CODE_ENG:
                     textPrinter->japanese = FALSE;
                     return RENDER_REPEAT;
-                }
-                return RENDER_REPEAT;
-            case EXT_CTRL_CODE_MIN_LETTER_SPACING:
-                textPrinter->minLetterSpacing = *textPrinter->printerTemplate.currentChar++;
-                return RENDER_REPEAT;
-            case EXT_CTRL_CODE_JPN:
-                textPrinter->japanese = TRUE;
-                return RENDER_REPEAT;
-            case EXT_CTRL_CODE_ENG:
-                textPrinter->japanese = FALSE;
-                return RENDER_REPEAT;
-            case EXT_CTRL_CODE_SPEAKER:
-                {
-                    enum SpeakerNames name = *textPrinter->printerTemplate.currentChar++;
-                    TrySpawnAndShowNamebox(gSpeakerNamesTable[name], NAME_BOX_BASE_TILE_NUM);
+                case EXT_CTRL_CODE_SPEAKER:
+                    {
+                        enum SpeakerNames name = *textPrinter->printerTemplate.currentChar++;
+                        TrySpawnAndShowNamebox(gSpeakerNamesTable[name], NAME_BOX_BASE_TILE_NUM);
 
-                    return RENDER_REPEAT;
+                        return RENDER_REPEAT;
+                    }
                 }
-            }
             break;
         case CHAR_PROMPT_CLEAR:
             textPrinter->state = RENDER_STATE_CLEAR;

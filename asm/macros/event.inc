@@ -2698,6 +2698,7 @@
 	@ Show the current map's name popup.
 	.macro mappopup
 	callnative Script_MapPopUp
+	.endm
 
 @ VS Seeker
 	.macro vsseeker_rematchid rematchId:req

@@ -6491,11 +6491,7 @@ u8 GetAttackerObedienceForAction()
     if (FlagGet(FLAG_BADGE07_GET)) // Mind Badge
         obedienceLevel = 82;
 
-    if (B_OBEDIENCE_MECHANICS >= GEN_8
-     && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))
-        levelReferenced = gBattleMons[gBattlerAttacker].metLevel;
-    else
-        levelReferenced = gBattleMons[gBattlerAttacker].level;
+    levelReferenced = gBattleMons[gBattlerAttacker].level;
 
     if (levelReferenced <= obedienceLevel)
         return OBEYS;

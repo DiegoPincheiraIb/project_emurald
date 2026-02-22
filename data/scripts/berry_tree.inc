@@ -88,8 +88,8 @@ BerryTree_EventScript_CheckBerryStage1::
 	special ObjectEventInteractionGetBerryCountString
 	checkitem ITEM_WAILMER_PAIL, 1
 	compare VAR_RESULT, 0
-	goto_if_eq BerryTree_EventScript_DontWater
-	msgbox BerryTree_Text_BerryGrowthStage1, MSGBOX_YESNO
+	goto_if_eq BerryTree_EventScript_CantWaterStage1
+	msgbox BerryTree_Text_WaterBerryGrowthStage1, MSGBOX_YESNO
 	compare VAR_RESULT, YES
 	goto_if_eq BerryTree_EventScript_WaterBerry
 	compare VAR_RESULT, NO
@@ -100,8 +100,8 @@ BerryTree_EventScript_CheckBerryStage2::
 	special ObjectEventInteractionGetBerryName
 	checkitem ITEM_WAILMER_PAIL, 1
 	compare VAR_RESULT, 0
-	goto_if_eq BerryTree_EventScript_DontWater
-	msgbox BerryTree_Text_BerryGrowthStage2, MSGBOX_YESNO
+	goto_if_eq BerryTree_EventScript_CantWaterStage2
+	msgbox BerryTree_Text_WaterBerryGrowthStage2, MSGBOX_YESNO
 	compare VAR_RESULT, YES
 	goto_if_eq BerryTree_EventScript_WaterBerry
 	compare VAR_RESULT, NO
@@ -112,8 +112,8 @@ BerryTree_EventScript_CheckBerryStage3::
 	special ObjectEventInteractionGetBerryName
 	checkitem ITEM_WAILMER_PAIL, 1
 	compare VAR_RESULT, 0
-	goto_if_eq BerryTree_EventScript_DontWater
-	msgbox BerryTree_Text_BerryGrowthStage3, MSGBOX_YESNO
+	goto_if_eq BerryTree_EventScript_CantWaterStage3
+	msgbox BerryTree_Text_WaterBerryGrowthStage3, MSGBOX_YESNO
 	compare VAR_RESULT, YES
 	goto_if_eq BerryTree_EventScript_WaterBerry
 	compare VAR_RESULT, NO
@@ -141,13 +141,36 @@ BerryTree_EventScript_CheckBerryStage4::
 	special ObjectEventInteractionGetBerryName
 	checkitem ITEM_WAILMER_PAIL, 1
 	compare VAR_RESULT, 0
-	goto_if_eq BerryTree_EventScript_DontWater
-	msgbox BerryTree_Text_BerryGrowthStage4, MSGBOX_YESNO
+	goto_if_eq BerryTree_EventScript_CantWaterStage4
+	msgbox BerryTree_Text_WaterBerryGrowthStage4, MSGBOX_YESNO
 	compare VAR_RESULT, YES
 	goto_if_eq BerryTree_EventScript_WaterBerry
 	compare VAR_RESULT, NO
 	goto_if_eq BerryTree_EventScript_DontWater
 
+BerryTree_EventScript_CantWaterStage1::
+	message BerryTree_Text_BerryGrowthStage1
+	waitmessage
+	waitbuttonpress
+	goto BerryTree_EventScript_DontWater
+
+BerryTree_EventScript_CantWaterStage2::
+	message BerryTree_Text_BerryGrowthStage2
+	waitmessage
+	waitbuttonpress
+	goto BerryTree_EventScript_DontWater
+
+BerryTree_EventScript_CantWaterStage3::
+	message BerryTree_Text_BerryGrowthStage3
+	waitmessage
+	waitbuttonpress
+	goto BerryTree_EventScript_DontWater
+
+BerryTree_EventScript_CantWaterStage4::
+	message BerryTree_Text_BerryGrowthStage4
+	waitmessage
+	waitbuttonpress
+	goto BerryTree_EventScript_DontWater
 
 @ VAR_0x8005 here is the number of times watered
 @ Buffered by ObjectEventInteractionGetBerryTreeData
@@ -268,6 +291,14 @@ BerryTree_Text_BerryGrowthStage1:
 	.string "One {STR_VAR_1} was planted here.$"
 .endif
 
+BerryTree_Text_WaterBerryGrowthStage1:
+.if OW_BERRY_SIX_STAGES == TRUE
+	.string "Here is your {STR_VAR_1}!\n"
+.else
+	.string "One {STR_VAR_1} was planted here.\n"
+.endif
+	.string "Do you want to water it?$"
+
 BerryTree_Text_BerryGrowthStage2:
 .if OW_BERRY_SIX_STAGES == TRUE
 	.string "The {STR_VAR_1} is sprouting!$"
@@ -275,12 +306,28 @@ BerryTree_Text_BerryGrowthStage2:
 	.string "{STR_VAR_1} has sprouted.$"
 .endif
 
+BerryTree_Text_WaterBerryGrowthStage2:
+.if OW_BERRY_SIX_STAGES == TRUE
+	.string "The {STR_VAR_1} is sprouting!\n"
+.else
+	.string "{STR_VAR_1} has sprouted.\n"
+.endif
+	.string "Do you want to water it?$"
+
 BerryTree_Text_BerryGrowthStage3:
 .if OW_BERRY_SIX_STAGES == TRUE
 	.string "The {STR_VAR_1}'s seedling is growing well!$"
 .else
 	.string "This {STR_VAR_1} plant is growing taller.$"
 .endif
+
+BerryTree_Text_WaterBerryGrowthStage3:
+.if OW_BERRY_SIX_STAGES == TRUE
+	.string "The {STR_VAR_1}'s seedling is growing well!\n"
+.else
+	.string "This {STR_VAR_1} plant is growing taller.\n"
+.endif
+	.string "Do you want to water it?$"
 
 BerryTree_Text_BerryGrowthStageTrunk:
 	.string "The {STR_VAR_1}'s trunk is getting bigger!$"
@@ -294,6 +341,15 @@ BerryTree_Text_BerryGrowthStage4:
 .else
 	.string "These {STR_VAR_1} flowers are blooming\n"
 	.string "{STR_VAR_2}.$"
+.endif
+
+BerryTree_Text_WaterBerryGrowthStage4:
+.if OW_BERRY_SIX_STAGES == TRUE
+	.string "The {STR_VAR_1} tree is in bloom!\n"
+	.string "Do you want to water them?$"
+.else
+	.string "These {STR_VAR_1} flowers are blooming\n"
+	.string "{STR_VAR_2}. Water them?$"
 .endif
 
 BerryTree_Text_CareAdverbGreat:

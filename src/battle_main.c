@@ -2209,11 +2209,11 @@ static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
 //*                    TRAINER PARTY CREATION
 //* ===========================================================================
 
-//*TODO: Modify this part to add random teams for trainers.
-u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer *trainer, bool32 firstTrainer, u32 battleTypeFlags)
+u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const struct Trainer *trainer, bool32 firstTrainer, u32 battleTypeFlags)
 {
     s32 i;
     u8 monsCount;
+    u32 teamSeed = Random();
     if (battleTypeFlags & BATTLE_TYPE_TRAINER && !(battleTypeFlags & (BATTLE_TYPE_FRONTIER
                                                                         | BATTLE_TYPE_EREADER_TRAINER
                                                                         | BATTLE_TYPE_TRAINER_HILL)))
@@ -2229,26 +2229,27 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             s32 ball;
             u32 personalityHash = GeneratePartyHash(trainer, i);
             const struct TrainerMon *partyEntry = &trainer->party[monIndex];
-            u16 species = partyEntry->species;
+            struct TrainerMon resolvedPartyEntry = *partyEntry;
+            u16 species = resolvedPartyEntry.species;
             u32 otIdType;
             u32 fixedOtId;
 
-            // If the trainer has a species pool given their trainer class,
-            // randomly select a species from it
-            TryGetTrainerClassPoolSpecies(trainer->trainerClass, Random(), partyEntry->isCoreMember, &species);
+            // Prefer predefined team pools by trainer id; otherwise fallback to class random mon pools.
+            if (!TryApplyTrainerTeamPoolMon(trainerId, teamSeed, monIndex, &resolvedPartyEntry, &species))
+                TryApplyTrainerClassPoolMon(trainer->trainerClass, Random(), &resolvedPartyEntry, &species);
 
-            u32 personalityValue = BuildTrainerMonPersonality(trainer, partyEntry, personalityHash, species);
+            u32 personalityValue = BuildTrainerMonPersonality(trainer, &resolvedPartyEntry, personalityHash, species);
 
-            GetTrainerMonOtId(partyEntry, personalityValue, &otIdType, &fixedOtId);
+            GetTrainerMonOtId(&resolvedPartyEntry, personalityValue, &otIdType, &fixedOtId);
 
             //* =====================    POKEMON CREATION    ===================
-            CreateMon(&party[i], species, partyEntry->lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
-            SetDynamicTrainerMonLevel(&party[i], partyEntry);
+            CreateMon(&party[i], species, resolvedPartyEntry.lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
+            SetDynamicTrainerMonLevel(&party[i], &resolvedPartyEntry);
             EvolveTrainerMonIfPossible(&party[i]);
             species = GetMonData(&party[i], MON_DATA_SPECIES);
 
             //* ================    POKEMON DATA CONFIGURATION    ==============
-            ball = ConfigureTrainerMonData(&party[i], partyEntry, personalityHash, i, species);
+            ball = ConfigureTrainerMonData(&party[i], &resolvedPartyEntry, personalityHash, i, species);
 
             if (B_TRAINER_CLASS_POKE_BALLS >= GEN_7 && ball == -1)
             {
@@ -2278,11 +2279,11 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
         if (tempTrainer.partySize == 0)
             tempTrainer.partySize = origTrainer->partySize;
 
-        retVal = CreateNPCTrainerPartyFromTrainer(party, (const struct Trainer *)(&tempTrainer), firstTrainer, gBattleTypeFlags);
+        retVal = CreateNPCTrainerPartyFromTrainer(party, trainerNum, (const struct Trainer *)(&tempTrainer), firstTrainer, gBattleTypeFlags);
     }
     else
     {
-        retVal = CreateNPCTrainerPartyFromTrainer(party, GetTrainerStructFromId(trainerNum), firstTrainer, gBattleTypeFlags);
+        retVal = CreateNPCTrainerPartyFromTrainer(party, trainerNum, GetTrainerStructFromId(trainerNum), firstTrainer, gBattleTypeFlags);
     }
     return retVal;
 }
@@ -2293,7 +2294,7 @@ void CreateTrainerPartyForPlayer(void)
 
     ZeroPlayerPartyMons();
     gPartnerTrainerId = gSpecialVar_0x8004;
-    CreateNPCTrainerPartyFromTrainer(gPlayerParty, GetTrainerStructFromId(gSpecialVar_0x8004), TRUE, BATTLE_TYPE_TRAINER);
+    CreateNPCTrainerPartyFromTrainer(gPlayerParty, gSpecialVar_0x8004, GetTrainerStructFromId(gSpecialVar_0x8004), TRUE, BATTLE_TYPE_TRAINER);
 }
 
 void VBlankCB_Battle(void)

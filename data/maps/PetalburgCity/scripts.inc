@@ -553,6 +553,10 @@ PetalburgCity_EventScript_Scott::
 	delay 30
 	msgbox PetalburgCity_Text_ImLookingForTalentedTrainers, MSGBOX_DEFAULT
 	closemessage
+	giveitem ITEM_VS_SEEKER
+	delay 30
+	msgbox PetalburgCity_Text_SeekingChallenges, MSGBOX_DEFAULT
+	closemessage
 	call_if_eq VAR_0x8008, 0, PetalburgCity_EventScript_ScottExit0
 	call_if_eq VAR_0x8008, 1, PetalburgCity_EventScript_ScottExit1
 	call_if_eq VAR_0x8008, 2, PetalburgCity_EventScript_ScottExit2
@@ -757,5 +761,12 @@ PetalburgCity_Text_WellMaybeNot:
 
 PetalburgCity_Text_ImLookingForTalentedTrainers:
 	.string "I'm roaming the land in search of\n"
-	.string "talented TRAINERS.\p"
-	.string "I'm sorry to have taken your time.$"
+	.string "{COLOR RED}talented and fearless TRAINERS{COLOR DARK_GRAY}.\p"
+	.string "You seem to have potential to be one,\n"
+	.string "but I can tell your current trainer\p"
+	.string "experience is almost non-existent.\n"
+	.string "... Maybe this will help you.$"
+
+PetalburgCity_Text_SeekingChallenges::
+	.string "Start {COLOR BLUE}seeking{COLOR DARK_GRAY} challenges, and we may\n"
+	.string "meet again in the far future. Good luck.$"

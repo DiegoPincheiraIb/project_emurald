@@ -77,6 +77,12 @@ struct Pokemon
     bool shiny;
     int shiny_line;
 
+    bool is_core_member;
+    int is_core_member_line;
+
+    bool is_level_fixed;
+    int is_level_fixed_line;
+
     int dynamax_level;
     int dynamax_level_line;
 
@@ -1461,6 +1467,22 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
                 if (!token_bool(p, &value, &pokemon->shiny))
                     any_error = !show_parse_error(p);
             }
+            else if (is_literal_token(&key, "Core Member"))
+            {
+                if (pokemon->is_core_member_line)
+                    any_error = !set_show_parse_error(p, key.location, "duplicate 'Core Member'");
+                pokemon->is_core_member_line = value.location.line;
+                if (!token_bool(p, &value, &pokemon->is_core_member))
+                    any_error = !show_parse_error(p);
+            }
+            else if (is_literal_token(&key, "Level Fixed"))
+            {
+                if (pokemon->is_level_fixed_line)
+                    any_error = !set_show_parse_error(p, key.location, "duplicate 'Level Fixed'");
+                pokemon->is_level_fixed_line = value.location.line;
+                if (!token_bool(p, &value, &pokemon->is_level_fixed))
+                    any_error = !show_parse_error(p);
+            }
             else if (is_literal_token(&key, "Dynamax Level"))
             {
                 if (pokemon->dynamax_level_line)
@@ -1494,7 +1516,7 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
             }
             else
             {
-                any_error = !set_show_parse_error(p, key.location, "expected one of 'EVs', 'IVs', 'Ability', 'Level', 'Ball', 'Happiness', 'Nature', 'Shiny', 'Dynamax Level', 'Gigantamax', or 'Tera Type'");
+                any_error = !set_show_parse_error(p, key.location, "expected one of 'EVs', 'IVs', 'Ability', 'Level', 'Ball', 'Happiness', 'Nature', 'Shiny', 'Core Member', 'Level Fixed', 'Dynamax Level', 'Gigantamax', 'Tera Type', or 'Tags'");
             }
         }
 
@@ -2034,6 +2056,22 @@ static void fprint_trainers(const char *output_path, FILE *f, struct Parsed *par
                 fprintf(f, "#line %d\n", pokemon->shiny_line);
                 fprintf(f, "            .isShiny = ");
                 fprint_bool(f, pokemon->shiny);
+                fprintf(f, ",\n");
+            }
+
+            if (pokemon->is_core_member_line)
+            {
+                fprintf(f, "#line %d\n", pokemon->is_core_member_line);
+                fprintf(f, "            .isCoreMember = ");
+                fprint_bool(f, pokemon->is_core_member);
+                fprintf(f, ",\n");
+            }
+
+            if (pokemon->is_level_fixed_line)
+            {
+                fprintf(f, "#line %d\n", pokemon->is_level_fixed_line);
+                fprintf(f, "            .isLevelFixed = ");
+                fprint_bool(f, pokemon->is_level_fixed);
                 fprintf(f, ",\n");
             }
 

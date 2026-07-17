@@ -23,12 +23,12 @@ static const struct TrainerClassSpeciesPool sTrainerClassSpeciesPools[] =
 #undef TRAINER_CLASS_SPECIES_POOL
 
 // Returns TRUE and sets *speciesOut to a species from the pool for the given trainer class and slot,
-// or FALSE if the trainer class has no pool.
-bool32 TryGetTrainerClassPoolSpecies(enum TrainerClassID trainerClass, u32 slot, u16 *speciesOut)
+// or FALSE if the trainer class has no pool or the mon is a core member.
+bool32 TryGetTrainerClassPoolSpecies(enum TrainerClassID trainerClass, u32 slot, bool32 isCoreMember, u16 *speciesOut)
 {
     u32 i;
 
-    if (speciesOut == NULL)
+    if (speciesOut == NULL || isCoreMember == TRUE)
         return FALSE;
 
     for (i = 0; i < ARRAY_COUNT(sTrainerClassSpeciesPools); i++)

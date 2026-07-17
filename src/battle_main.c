@@ -2047,6 +2047,164 @@ static u8 GetTrainerBattleMonsCount(const struct Trainer *trainer, u32 battleTyp
     return trainer->partySize;
 }
 
+// Sets the level of the opposing trainer's pokemon dinamically,
+// given your own party's level.
+static void SetDynamicTrainerMonLevel(struct Pokemon *mon, const struct TrainerMon *partyEntry)
+{
+    u16 dynamicLevel = 0;
+    u16 partyLevelAdjust;
+    u8 partyMonLevel[] = {0, 0}; // [0] = weakest, [1] = strongest
+    u8 validMonsCount = 0;
+    s32 adjustedLevel;
+    s32 randDiff = (Random() % 5) - 2;
+    u8 newLevel;
+    u8 targetLevel;
+    u16 species;
+    u32 exp;
+    static const u8 minDynamicLevel = 3;
+    static const u8 maxDynamicLevel = 100;
+
+    for (s32 i = 0; i < PARTY_SIZE; i++)
+    {
+        u8 level;
+
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
+            continue;
+
+        level = GetMonData(&gPlayerParty[i], MON_DATA_LEVEL);
+        dynamicLevel += level;
+
+        if (validMonsCount == 0)
+        {
+            partyMonLevel[0] = level;
+            partyMonLevel[1] = level;
+        }
+        else
+        {
+            if (level < partyMonLevel[0])
+                partyMonLevel[0] = level;
+            if (level > partyMonLevel[1])
+                partyMonLevel[1] = level;
+        }
+
+        validMonsCount++;
+    }
+
+    if (validMonsCount == 0)
+        return;
+
+    dynamicLevel /= validMonsCount;
+
+    // Weigh the average slightly toward stronger party members when spread is large.
+    partyLevelAdjust = partyMonLevel[1] - partyMonLevel[0];
+
+    if (partyMonLevel[1] - dynamicLevel < 10)
+        partyLevelAdjust = 0;
+    else if (partyMonLevel[1] - dynamicLevel < 20)
+        partyLevelAdjust /= 10;
+    else if (partyMonLevel[1] - dynamicLevel < 30)
+        partyLevelAdjust /= 5;
+    else if (partyMonLevel[1] - dynamicLevel < 40)
+        partyLevelAdjust = partyLevelAdjust * 3 / 10;
+    else if (partyMonLevel[1] - dynamicLevel < 50)
+        partyLevelAdjust = partyLevelAdjust * 2 / 5;
+    else if (partyMonLevel[1] - dynamicLevel < 60)
+        partyLevelAdjust /= 2;
+    else if (partyMonLevel[1] - dynamicLevel < 70)
+        partyLevelAdjust = partyLevelAdjust * 3 / 5;
+    else if (partyMonLevel[1] - dynamicLevel < 80)
+        partyLevelAdjust = partyLevelAdjust * 7 / 10;
+    else if (partyMonLevel[1] - dynamicLevel < 90)
+        partyLevelAdjust = partyLevelAdjust * 4 / 5;
+
+    adjustedLevel = (s32)dynamicLevel + (s32)partyLevelAdjust + randDiff;
+
+    if (adjustedLevel < minDynamicLevel)
+        adjustedLevel = minDynamicLevel;
+    else if (adjustedLevel > maxDynamicLevel)
+        adjustedLevel = maxDynamicLevel;
+
+    newLevel = adjustedLevel;
+
+    if (partyEntry->isLevelFixed)
+        targetLevel = partyEntry->lvl;
+    else
+        targetLevel = (partyEntry->lvl < newLevel) ? newLevel : partyEntry->lvl;
+
+    species = GetMonData(mon, MON_DATA_SPECIES);
+    exp = gExperienceTables[gSpeciesInfo[species].growthRate][targetLevel];
+    SetMonData(mon, MON_DATA_EXP, &exp);
+    SetMonData(mon, MON_DATA_LEVEL, &targetLevel);
+}
+
+// If opposing mon level is enough to guarantee evolution, evolve it.
+// If multiple evolution branches are possible, pick one at random.
+static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
+{
+    u8 level = GetMonData(mon, MON_DATA_LEVEL);
+
+    // Continue evolving while the current level unlocks new level-based stages.
+    for (u32 evoStep = 0; evoStep < 8; evoStep++)
+    {
+        u16 species = GetMonData(mon, MON_DATA_SPECIES);
+        const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+        u16 possibleTargets[16];
+        u32 possibleCount = 0;
+
+        if (evolutions == NULL)
+            break;
+
+        for (u32 i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+        {
+            bool32 methodMet = FALSE;
+
+            if (SanitizeSpeciesId(evolutions[i].targetSpecies) == SPECIES_NONE)
+                continue;
+
+            switch (evolutions[i].method)
+            {
+            case EVO_LEVEL:
+            case EVO_LEVEL_BATTLE_ONLY:
+                if (evolutions[i].param <= level)
+                    methodMet = TRUE;
+                break;
+            }
+
+            if (!methodMet)
+                continue;
+
+            if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
+                continue;
+
+            possibleTargets[possibleCount++] = evolutions[i].targetSpecies;
+            if (possibleCount >= ARRAY_COUNT(possibleTargets))
+                break;
+        }
+
+        if (possibleCount == 0)
+            break;
+
+        {
+            u16 prevSpecies = species;
+            u16 targetSpecies = possibleTargets[Random() % possibleCount];
+            u32 exp = gExperienceTables[gSpeciesInfo[targetSpecies].growthRate][level];
+            u8 nickname[POKEMON_NAME_LENGTH + 1];
+
+            GetMonData(mon, MON_DATA_NICKNAME, nickname);
+
+            SetMonData(mon, MON_DATA_SPECIES, &targetSpecies);
+            SetMonData(mon, MON_DATA_EXP, &exp);
+
+            // Keep custom nicknames intact; only refresh default species names.
+            if (StringCompare(nickname, GetSpeciesName(prevSpecies)) == 0)
+                SetMonData(mon, MON_DATA_NICKNAME, GetSpeciesName(targetSpecies));
+
+            CalculateMonStats(mon);
+            level = GetMonData(mon, MON_DATA_LEVEL);
+        }
+    }
+}
+
 //* ============================================================================
 //*                    TRAINER PARTY CREATION
 //* ===========================================================================
@@ -2077,7 +2235,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
 
             // If the trainer has a species pool given their trainer class,
             // randomly select a species from it
-            TryGetTrainerClassPoolSpecies(trainer->trainerClass, Random(), &species);
+            TryGetTrainerClassPoolSpecies(trainer->trainerClass, Random(), partyEntry->isCoreMember, &species);
 
             u32 personalityValue = BuildTrainerMonPersonality(trainer, partyEntry, personalityHash, species);
 
@@ -2085,6 +2243,9 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
 
             //* =====================    POKEMON CREATION    ===================
             CreateMon(&party[i], species, partyEntry->lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
+            SetDynamicTrainerMonLevel(&party[i], partyEntry);
+            EvolveTrainerMonIfPossible(&party[i]);
+            species = GetMonData(&party[i], MON_DATA_SPECIES);
 
             //* ================    POKEMON DATA CONFIGURATION    ==============
             ball = ConfigureTrainerMonData(&party[i], partyEntry, personalityHash, i, species);

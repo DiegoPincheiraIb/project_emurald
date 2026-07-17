@@ -76,7 +76,9 @@ struct TrainerMon
     u8 shouldUseDynamax:1;
     u8 padding1:1;
     u8 dynamaxLevel:4;
-    u8 padding2:4;
+    bool8 isCoreMember:1;
+    bool8 isLevelFixed:1;
+    u8 padding2:2;
     u32 tags;
 };
 

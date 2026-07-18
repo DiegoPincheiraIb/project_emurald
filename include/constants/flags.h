@@ -44,8 +44,8 @@
 #define NUM_TEMP_FLAGS   (TEMP_FLAGS_END - TEMP_FLAGS_START + 1)
 
 #define FLAG_IS_RTC_ENABLED  0x20 // Check if RTC is enabled
-#define FLAG_UNUSED_0x021    0x21 // Unused Flag
-#define FLAG_UNUSED_0x022    0x22 // Unused Flag
+#define FLAG_EXP_SHARE       0x21 // Checks if the Exp. Share is enabled.
+#define FLAG_VS_SEEKER       0x22 // Allows use for the Vs. Seeker.
 #define FLAG_UNUSED_0x023    0x23 // Unused Flag
 #define FLAG_UNUSED_0x024    0x24 // Unused Flag
 #define FLAG_UNUSED_0x025    0x25 // Unused Flag

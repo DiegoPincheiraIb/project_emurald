@@ -407,6 +407,7 @@ struct Evolution
     u16 param;
     u16 targetSpecies;
     const struct EvolutionParam *params;
+    u16 optHeldItem;
 };
 
 struct SpeciesInfo /*0xC4*/

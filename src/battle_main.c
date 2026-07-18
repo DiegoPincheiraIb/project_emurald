@@ -2139,9 +2139,12 @@ static void SetDynamicTrainerMonLevel(struct Pokemon *mon, const struct TrainerM
 
 // If opposing mon level is enough to guarantee evolution, evolve it.
 // If multiple evolution branches are possible, pick one at random.
+// If no level-based branch is available, allow randomized item branches
+// (e.g. Eevee) so trainer branch evolutions are not deterministic/non-evolving.
 static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
 {
     u8 level = GetMonData(mon, MON_DATA_LEVEL);
+    const bool32 ignoreItemRequirements = B_ENEMY_RANDOM_EVO_IGNORE_ITEMS;
 
     // Continue evolving while the current level unlocks new level-based stages.
     for (u32 evoStep = 0; evoStep < 8; evoStep++)
@@ -2150,6 +2153,7 @@ static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
         const struct Evolution *evolutions = GetSpeciesEvolutions(species);
         u16 possibleTargets[16];
         u32 possibleCount = 0;
+        bool32 usedItemFallback = FALSE;
 
         if (evolutions == NULL)
             break;
@@ -2157,6 +2161,7 @@ static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
         for (u32 i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
         {
             bool32 methodMet = FALSE;
+            bool32 skipItemRequirement = FALSE;
 
             if (SanitizeSpeciesId(evolutions[i].targetSpecies) == SPECIES_NONE)
                 continue;
@@ -2168,20 +2173,55 @@ static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
                 if (evolutions[i].param <= level)
                     methodMet = TRUE;
                 break;
+            case EVO_LEVEL_HOLD_ITEM:
+                if (evolutions[i].param <= level)
+                {
+                    methodMet = TRUE;
+                    skipItemRequirement = ignoreItemRequirements;
+                }
+                break;
             }
 
             if (!methodMet)
                 continue;
 
-            if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
-                continue;
+            if (!skipItemRequirement)
+            {
+                if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
+                    continue;
+            }
 
             possibleTargets[possibleCount++] = evolutions[i].targetSpecies;
             if (possibleCount >= ARRAY_COUNT(possibleTargets))
                 break;
         }
 
+        // Fallback for branch evolutions that are item-only (e.g. Eevee).
+        // We only use this path if there are multiple valid item branches.
         if (possibleCount == 0)
+        {
+            usedItemFallback = TRUE;
+            for (u32 i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+            {
+                if (SanitizeSpeciesId(evolutions[i].targetSpecies) == SPECIES_NONE)
+                    continue;
+
+                if (evolutions[i].method != EVO_ITEM)
+                    continue;
+
+                if (!ignoreItemRequirements)
+                {
+                    if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
+                        continue;
+                }
+
+                possibleTargets[possibleCount++] = evolutions[i].targetSpecies;
+                if (possibleCount >= ARRAY_COUNT(possibleTargets))
+                    break;
+            }
+        }
+
+        if (possibleCount == 0 || (usedItemFallback && possibleCount == 1))
             break;
 
         {
@@ -2245,6 +2285,10 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const 
             //* =====================    POKEMON CREATION    ===================
             CreateMon(&party[i], species, resolvedPartyEntry.lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetDynamicTrainerMonLevel(&party[i], &resolvedPartyEntry);
+
+            // EVO_LEVEL_HOLD_ITEM needs the trainer-defined held item before evolution checks.
+            SetMonData(&party[i], MON_DATA_HELD_ITEM, &resolvedPartyEntry.heldItem);
+
             EvolveTrainerMonIfPossible(&party[i]);
             species = GetMonData(&party[i], MON_DATA_SPECIES);
 

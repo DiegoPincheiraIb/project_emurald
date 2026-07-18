@@ -222,6 +222,7 @@ static const u8 sText_EVO_RECOIL_DAMAGE_MALE[] = _("{LV}{UP_ARROW} with {STR_VAR
 static const u8 sText_EVO_RECOIL_DAMAGE_FEMALE[] = _("{LV}{UP_ARROW} with {STR_VAR_2} recoil, female");
 static const u8 sText_EVO_DEFEAT_THREE_WITH_ITEM[] = _("{LV}{UP_ARROW} defeating 3 {STR_VAR_3} holding {STR_VAR_2}");
 static const u8 sText_EVO_NONE[] = _("{STR_VAR_1} has no evolution.");
+static const u8 sText_EVO_LEVEL_HOLD_ITEM[] = _("{LV}{UP_ARROW} to {STR_VAR_2} holding {STR_VAR_3}");
 
 static const u8 sText_FORMS_Buttons_PE[] = _("{A_BUTTON}FORM MODE  {START_BUTTON}EVOs");
 static const u8 sText_FORMS_Buttons_Decapped_PE[] = _("{START_BUTTON}Evos");
@@ -6583,6 +6584,7 @@ static void PrintEvolutionTargetSpeciesAndMethod(u8 taskId, u16 species, u8 dept
                 StringExpandPlaceholders(gStringVar4, COMPOUND_STRING("Unknown"));
                 break;
             case EVO_LEVEL:
+            case EVO_LEVEL_HOLD_ITEM:
             case EVO_LEVEL_BATTLE_ONLY:
                 StringCopy(gStringVar4, COMPOUND_STRING("{LV}{UP_ARROW}"));
                 if (evolutions[i].param > 1)

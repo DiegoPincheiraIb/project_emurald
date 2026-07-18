@@ -318,7 +318,8 @@ enum EvolutionMethods {
     EVO_SCRIPT_TRIGGER,         // Player interacts with an overworld trigger
     EVO_LEVEL_BATTLE_ONLY,      // Pokémon reaches the specified level, in battle only
     EVO_BATTLE_END,             // Battle ends, doesn't need to level up
-    EVO_SPIN                    // The player spins in the overworld
+    EVO_SPIN,                   // The player spins in the overworld
+    EVO_LEVEL_HOLD_ITEM         // Pokémon reaches the specified level while holding a specific item
 };
 
 enum EvolutionMode {

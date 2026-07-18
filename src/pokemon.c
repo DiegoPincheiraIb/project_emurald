@@ -4730,6 +4730,25 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
     return TRUE;
 }
 
+static bool32 IsValidLevelHoldItemEvolution(const struct Evolution *evolution, u16 heldItem)
+{
+    u32 i;
+
+    // Prefer the dedicated held-item slot when present.
+    if (evolution->optHeldItem != ITEM_NONE)
+        return heldItem == evolution->optHeldItem;
+
+    // Backward compatibility path: item requirement declared in additional conditions.
+    for (i = 0; evolution->params != NULL && evolution->params[i].condition != CONDITIONS_END; i++)
+    {
+        if (evolution->params[i].condition == IF_HOLD_ITEM)
+            return heldItem == evolution->params[i].arg1;
+    }
+
+    // Misconfigured EVO_LEVEL_HOLD_ITEM: no item requirement declared.
+    return FALSE;
+}
+
 u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 evolutionItem, struct Pokemon *tradePartner, bool32 *canStopEvo, enum EvoState evoState)
 {
     int i;
@@ -4773,6 +4792,11 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             {
             case EVO_LEVEL:
                 if (evolutions[i].param <= level)
+                    conditionsMet = TRUE;
+                break;
+            case EVO_LEVEL_HOLD_ITEM:
+                if (evolutions[i].param <= level
+                 && IsValidLevelHoldItemEvolution(&evolutions[i], heldItem))
                     conditionsMet = TRUE;
                 break;
             case EVO_LEVEL_BATTLE_ONLY:
@@ -4930,6 +4954,7 @@ bool8 IsMonPastEvolutionLevel(struct Pokemon *mon)
 {
     int i;
     u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
+    u16 heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     u8 level = GetMonData(mon, MON_DATA_LEVEL, 0);
     const struct Evolution *evolutions = GetSpeciesEvolutions(species);
 
@@ -4945,6 +4970,11 @@ bool8 IsMonPastEvolutionLevel(struct Pokemon *mon)
         {
         case EVO_LEVEL:
             if (evolutions[i].param <= level)
+                return TRUE;
+            break;
+        case EVO_LEVEL_HOLD_ITEM:
+            if (evolutions[i].param <= level
+                && IsValidLevelHoldItemEvolution(&evolutions[i], heldItem))
                 return TRUE;
             break;
         }

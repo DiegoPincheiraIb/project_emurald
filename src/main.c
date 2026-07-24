@@ -91,7 +91,7 @@ void EnableVCountIntrAtLine150(void);
 
 void AgbMain(void)
 {
-    *(vu16 *)BG_PLTT = RGB_WHITE; // Set the backdrop to white on startup
+    *(vu16 *)BG_PLTT = RGB_BLACK; // Set the backdrop to black on startup
     InitGpuRegManager();
     REG_WAITCNT = WAITCNT_PREFETCH_ENABLE
 	        | WAITCNT_WS0_S_1 | WAITCNT_WS0_N_3
@@ -459,6 +459,8 @@ void DoSoftReset(void)
     DmaStop(1);
     DmaStop(2);
     DmaStop(3);
+    *(vu16 *)BG_PLTT = RGB_BLACK;
+    REG_DISPCNT = DISPCNT_FORCED_BLANK;
     SiiRtcProtect();
     SoftReset(RESET_ALL);
 }

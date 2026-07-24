@@ -18,6 +18,7 @@
 #include "list_menu.h"
 #include "mystery_event_menu.h"
 #include "naming_screen.h"
+#include "new_game.h"
 #include "option_menu.h"
 #include "overworld.h"
 #include "palette.h"
@@ -32,6 +33,7 @@
 #include "sprite.h"
 #include "strings.h"
 #include "string_util.h"
+#include "starter_choose.h"
 #include "task.h"
 #include "text.h"
 #include "text_window.h"
@@ -215,6 +217,12 @@ static void DrawMainMenuWindowBorder(const struct WindowTemplate *, u16);
 static void Task_HighlightSelectedMainMenuItem(u8);
 static void Task_NewGameBirchSpeech_WaitToShowGenderMenu(u8);
 static void Task_NewGameBirchSpeech_ChooseGender(u8);
+static void Task_NewGameBirchSpeech_AskVeteranPlayed(u8);
+static void Task_NewGameBirchSpeech_ProcessVeteranPlayed(u8);
+static void Task_NewGameBirchSpeech_AskVeteranSkip(u8);
+static void Task_NewGameBirchSpeech_ProcessVeteranSkip(u8);
+static void Task_NewGameBirchSpeech_WaitVeteranInfoA(u8);
+static void Task_NewGameBirchSpeech_StartNormalIntro(u8);
 static void NewGameBirchSpeech_ShowGenderMenu(void);
 static s8 NewGameBirchSpeech_ProcessGenderMenuInput(void);
 static void NewGameBirchSpeech_ClearGenderWindow(u8, u8);
@@ -225,6 +233,8 @@ static void Task_NewGameBirchSpeech_WaitForWhatsYourNameToPrint(u8);
 static void Task_NewGameBirchSpeech_WaitPressBeforeNameChoice(u8);
 static void Task_NewGameBirchSpeech_StartNamingScreen(u8);
 static void CB2_NewGameBirchSpeech_ReturnFromNamingScreen(void);
+static void CB2_NewGameBirchSpeech_ReturnFromVeteranNamingScreen(void);
+static void CB2_NewGameBirchSpeech_ReturnFromStarterChoice(void);
 static void Task_NewGameBirchSpeech_CreateNameYesNo(u8);
 static void Task_NewGameBirchSpeech_ProcessNameYesNoMenu(u8);
 void CreateYesNoMenuParameterized(u8, u8, u16, u16, u8, u8);
@@ -270,6 +280,9 @@ static const u8 gText_MainMenuMysteryEvents[] = _("MYSTERY EVENTS");
 static const u8 gText_WirelessNotConnected[] = _("The Wireless Adapter is not\nconnected.");
 static const u8 gText_MysteryGiftCantUse[] = _("MYSTERY GIFT can't be used while\nthe Wireless Adapter is attached.");
 static const u8 gText_MysteryEventsCantUse[] = _("MYSTERY EVENTS can't be used while\nthe Wireless Adapter is attached.");
+static const u8 gText_VeteranPlayedBefore[] = _("Have you played\nPOKEMON EMERALD before?");
+static const u8 gText_VeteranSkipIntro[] = _("Skip the early-game intro\nsteps?");
+static const u8 gText_VeteranSkipInfo[] = _("Veteran Mode will skip:\n- Moving intro\n- Birch rescue\n- Early setup scenes\pYou will still choose:\n- Gender\n- Name\n- Starter\pYou begin just before\nthe ROUTE 103 RIVAL\nbattle.");
 
 static const u8 gText_ContinueMenuPlayer[] = _("PLAYER");
 static const u8 gText_ContinueMenuTime[] = _("TIME");
@@ -420,6 +433,15 @@ static const struct WindowTemplate sNewGameBirchSpeechTextWindows[] =
         .paletteNum = 15,
         .baseBlock = 0x85
     },
+    {
+        .bg = 0,
+        .tilemapLeft = 3,
+        .tilemapTop = 5,
+        .width = 8,
+        .height = 6,
+        .paletteNum = 15,
+        .baseBlock = 0x140
+    },
     DUMMY_WIN_TEMPLATE
 };
 
@@ -475,6 +497,17 @@ static const union AffineAnimCmd *const sSpriteAffineAnimTable_PlayerShrink[] =
 static const struct MenuAction sMenuActions_Gender[] = {
     {COMPOUND_STRING("I'm a boy"), {NULL}},
     {COMPOUND_STRING("I'm a girl"), {NULL}}
+};
+
+static const struct MenuAction sMenuActions_YesNo[] = {
+    {COMPOUND_STRING("Yes"), {NULL}},
+    {COMPOUND_STRING("No"), {NULL}}
+};
+
+static const struct MenuAction sMenuActions_YesNoInfo[] = {
+    {COMPOUND_STRING("Yes"), {NULL}},
+    {COMPOUND_STRING("No"), {NULL}},
+    {COMPOUND_STRING("Info"), {NULL}}
 };
 
 static const u8 *const sMalePresetNames[] = {
@@ -1248,9 +1281,11 @@ static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 
 #define tPsyduckSpriteId data[9]
 #define tBrendanSpriteId data[10]
 #define tMaySpriteId data[11]
+#define tVeteranMode data[12]
 
 static void Task_NewGameBirchSpeech_Init(u8 taskId)
 {
+    NewGame_SetVeteranStart(FALSE, 0);
     SetGpuReg(REG_OFFSET_DISPCNT, 0);
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     InitBgFromTemplate(&sBirchBgTemplate);
@@ -1276,6 +1311,7 @@ static void Task_NewGameBirchSpeech_Init(u8 taskId)
     gTasks[taskId].func = Task_NewGameBirchSpeech_WaitToShowBirch;
     gTasks[taskId].tPlayerSpriteId = SPRITE_NONE;
     gTasks[taskId].data[3] = 0xFF;
+    gTasks[taskId].tVeteranMode = FALSE;
     gTasks[taskId].tTimer = 0xD8;
     PlayBGM(MUS_ROUTE122);
     ShowBg(0);
@@ -1321,12 +1357,111 @@ static void Task_NewGameBirchSpeech_WaitForSpriteFadeInWelcome(u8 taskId)
             NewGameBirchSpeech_ShowDialogueWindow(0, 1);
             PutWindowTilemap(0);
             CopyWindowToVram(0, COPYWIN_GFX);
-            NewGameBirchSpeech_ClearWindow(0);
-            StringExpandPlaceholders(gStringVar4, gText_Birch_Welcome);
-            AddTextPrinterForMessage(TRUE);
-            gTasks[taskId].func = Task_NewGameBirchSpeech_ThisIsAPokemon;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_AskVeteranPlayed;
         }
     }
+}
+
+static void Task_NewGameBirchSpeech_AskVeteranPlayed(u8 taskId)
+{
+    DrawMainMenuWindowBorder(&sNewGameBirchSpeechTextWindows[1], 0xF3);
+    FillWindowPixelBuffer(1, PIXEL_FILL(1));
+    PrintMenuTable(1, ARRAY_COUNT(sMenuActions_YesNo), sMenuActions_YesNo);
+    InitMenuInUpperLeftCornerNormal(1, ARRAY_COUNT(sMenuActions_YesNo), 0);
+    PutWindowTilemap(1);
+    CopyWindowToVram(1, COPYWIN_FULL);
+
+    NewGameBirchSpeech_ClearWindow(0);
+    StringExpandPlaceholders(gStringVar4, gText_VeteranPlayedBefore);
+    AddTextPrinterForMessage(TRUE);
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessVeteranPlayed;
+}
+
+static void Task_NewGameBirchSpeech_ProcessVeteranPlayed(u8 taskId)
+{
+    if (RunTextPrintersAndIsPrinter0Active())
+        return;
+
+    switch (Menu_ProcessInputNoWrap())
+    {
+    case 0: // Yes
+        PlaySE(SE_SELECT);
+        NewGameBirchSpeech_ClearGenderWindow(1, TRUE);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_AskVeteranSkip;
+        break;
+    case 1: // No
+    case MENU_B_PRESSED:
+        PlaySE(SE_SELECT);
+        NewGameBirchSpeech_ClearGenderWindow(1, TRUE);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_StartNormalIntro;
+        break;
+    }
+}
+
+static void Task_NewGameBirchSpeech_AskVeteranSkip(u8 taskId)
+{
+    DrawMainMenuWindowBorder(&sNewGameBirchSpeechTextWindows[3], 0xF3);
+    FillWindowPixelBuffer(3, PIXEL_FILL(1));
+    PrintMenuTable(3, ARRAY_COUNT(sMenuActions_YesNoInfo), sMenuActions_YesNoInfo);
+    InitMenuInUpperLeftCornerNormal(3, ARRAY_COUNT(sMenuActions_YesNoInfo), 0);
+    PutWindowTilemap(3);
+    CopyWindowToVram(3, COPYWIN_FULL);
+
+    NewGameBirchSpeech_ClearWindow(0);
+    StringExpandPlaceholders(gStringVar4, gText_VeteranSkipIntro);
+    AddTextPrinterForMessage(TRUE);
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessVeteranSkip;
+}
+
+static void Task_NewGameBirchSpeech_ProcessVeteranSkip(u8 taskId)
+{
+    if (RunTextPrintersAndIsPrinter0Active())
+        return;
+
+    switch (Menu_ProcessInputNoWrap())
+    {
+    case 0: // Yes
+        PlaySE(SE_SELECT);
+        gTasks[taskId].tVeteranMode = TRUE;
+        NewGameBirchSpeech_ClearGenderWindow(3, TRUE);
+        gSprites[gTasks[taskId].tBirchSpriteId].oam.objMode = ST_OAM_OBJ_BLEND;
+        gSprites[gTasks[taskId].tPsyduckSpriteId].oam.objMode = ST_OAM_OBJ_BLEND;
+        NewGameBirchSpeech_StartFadeOutTarget1InTarget2(taskId, 2);
+        NewGameBirchSpeech_StartFadePlatformIn(taskId, 1);
+        gTasks[taskId].tTimer = 0;
+        gTasks[taskId].func = Task_NewGameBirchSpeech_SlidePlatformAway;
+        break;
+    case 1: // No
+    case MENU_B_PRESSED:
+        PlaySE(SE_SELECT);
+        NewGameBirchSpeech_ClearGenderWindow(3, TRUE);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_StartNormalIntro;
+        break;
+    case 2: // Info
+        PlaySE(SE_SELECT);
+        NewGameBirchSpeech_ClearWindow(0);
+        StringExpandPlaceholders(gStringVar4, gText_VeteranSkipInfo);
+        AddTextPrinterForMessage(TRUE);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_WaitVeteranInfoA;
+        break;
+    }
+}
+
+static void Task_NewGameBirchSpeech_WaitVeteranInfoA(u8 taskId)
+{
+    if (!RunTextPrintersAndIsPrinter0Active() && JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_AskVeteranSkip;
+    }
+}
+
+static void Task_NewGameBirchSpeech_StartNormalIntro(u8 taskId)
+{
+    NewGameBirchSpeech_ClearWindow(0);
+    StringExpandPlaceholders(gStringVar4, gText_Birch_Welcome);
+    AddTextPrinterForMessage(TRUE);
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ThisIsAPokemon;
 }
 
 static void Task_NewGameBirchSpeech_ThisIsAPokemon(u8 taskId)
@@ -1588,6 +1723,12 @@ static void Task_NewGameBirchSpeech_StartNamingScreen(u8 taskId)
         FreeAllWindowBuffers();
         FreeAndDestroyMonPicSprite(gTasks[taskId].tPsyduckSpriteId);
         NewGameBirchSpeech_SetDefaultPlayerName(Random() % NUM_PRESET_NAMES);
+        if (gTasks[taskId].tVeteranMode)
+        {
+            DestroyTask(taskId);
+            DoNamingScreen(NAMING_SCREEN_PLAYER, gSaveBlock2Ptr->playerName, gSaveBlock2Ptr->playerGender, 0, 0, CB2_NewGameBirchSpeech_ReturnFromVeteranNamingScreen);
+            return;
+        }
         DestroyTask(taskId);
         DoNamingScreen(NAMING_SCREEN_PLAYER, gSaveBlock2Ptr->playerName, gSaveBlock2Ptr->playerGender, 0, 0, CB2_NewGameBirchSpeech_ReturnFromNamingScreen);
     }
@@ -1846,6 +1987,18 @@ static void CB2_NewGameBirchSpeech_ReturnFromNamingScreen(void)
     LoadMessageBoxGfx(0, BIRCH_DLG_BASE_TILE_NUM, BG_PLTT_ID(15));
     PutWindowTilemap(0);
     CopyWindowToVram(0, COPYWIN_FULL);
+}
+
+static void CB2_NewGameBirchSpeech_ReturnFromStarterChoice(void)
+{
+    NewGame_SetVeteranStart(TRUE, gSpecialVar_Result);
+    SetMainCallback2(CB2_NewGame);
+}
+
+static void CB2_NewGameBirchSpeech_ReturnFromVeteranNamingScreen(void)
+{
+    gMain.savedCallback = CB2_NewGameBirchSpeech_ReturnFromStarterChoice;
+    SetMainCallback2(CB2_ChooseStarter);
 }
 
 static void SpriteCB_Null(struct Sprite *sprite)

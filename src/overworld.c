@@ -1796,6 +1796,8 @@ static bool8 RunFieldCallback(void)
 
 void CB2_NewGame(void)
 {
+    bool8 veteranStart = NewGame_IsVeteranStartEnabled();
+
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
@@ -1804,7 +1806,10 @@ void CB2_NewGame(void)
     PlayTimeCounter_Start();
     ScriptContext_Init();
     UnlockPlayerFieldControls();
-    gFieldCallback = ExecuteTruckSequence;
+    if (veteranStart)
+        gFieldCallback = NULL;
+    else
+        gFieldCallback = ExecuteTruckSequence;
     gFieldCallback2 = NULL;
     DoMapLoadLoop(&gMain.state);
     SetFieldVBlankCallback();

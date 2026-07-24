@@ -12,5 +12,7 @@ void CopyTrainerId(u8 *dst, u8 *src);
 void NewGameInitData(void);
 void ResetMenuAndMonGlobals(void);
 void Sav2_ClearSetDefault(void);
+void NewGame_SetVeteranStart(bool8 enabled, u8 starterChoice);
+bool8 NewGame_IsVeteranStartEnabled(void);
 
 #endif // GUARD_NEW_GAME_H

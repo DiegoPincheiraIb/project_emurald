@@ -9509,6 +9509,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Treecko
 Level: 4
@@ -9524,6 +9525,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Slugma
 Level: 18
@@ -9545,6 +9547,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Slugma
 Level: 29
@@ -9566,6 +9569,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Force Setup First Turn
+Mugshot: Blue
 
 Torchic
 Level: 4
@@ -9581,6 +9585,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Wingull
 Level: 18
@@ -9602,6 +9607,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Pelipper
 Level: 29
@@ -9623,6 +9629,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Mudkip
 Level: 4
@@ -9638,6 +9645,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Lombre
 Level: 18
@@ -9659,6 +9667,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Lombre
 Level: 29
@@ -9680,6 +9689,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Treecko
 Level: 4
@@ -9695,6 +9705,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Wingull
 Level: 18
@@ -9716,6 +9727,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Slugma
 Level: 29
@@ -9737,6 +9749,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Torchic
 Level: 4
@@ -9752,6 +9765,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Wingull
 Level: 18
@@ -9773,6 +9787,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Pelipper
 Level: 29
@@ -9794,6 +9809,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Mudkip
 Level: 4
@@ -9809,6 +9825,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Lombre
 Level: 18
@@ -9830,6 +9847,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Lombre
 Level: 29
@@ -10862,6 +10880,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Check Bad Move
+Mugshot: Blue
 
 Lotad
 Level: 13
@@ -10879,6 +10898,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Check Bad Move
+Mugshot: Blue
 
 Wingull
 Level: 13
@@ -10986,6 +11006,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Slugma
 Level: 13
@@ -11003,6 +11024,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Force Setup First Turn
+Mugshot: Pink
 
 Wingull
 Level: 13
@@ -12265,6 +12287,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Tropius
 Level: 31
@@ -12290,6 +12313,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Tropius
 Level: 31
@@ -12315,6 +12339,7 @@ Gender: Male
 Music: Male
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Blue
 
 Tropius
 Level: 31
@@ -12340,6 +12365,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Tropius
 Level: 31
@@ -12365,6 +12391,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Tropius
 Level: 31
@@ -12390,6 +12417,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Tropius
 Level: 31
@@ -14139,6 +14167,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Lotad
 Level: 13
@@ -14156,6 +14185,7 @@ Gender: Female
 Music: Female
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Pink
 
 Torkoal
 Level: 13
@@ -16869,6 +16899,7 @@ Pic: RS Brendan
 Gender: Male
 Music: Male
 Double Battle: No
+Mugshot: Blue
 
 Groudon
 Level: 5
@@ -16881,6 +16912,7 @@ Pic: RS May
 Gender: Female
 Music: Male
 Double Battle: No
+Mugshot: Pink
 
 Kyogre
 Level: 5

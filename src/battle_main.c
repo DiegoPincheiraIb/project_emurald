@@ -2045,8 +2045,8 @@ static u8 GetTrainerBattleMonsCount(const struct Trainer *trainer, u32 battleTyp
     return trainer->partySize;
 }
 
-// Sets the level of the opposing trainer's pokemon dinamically,
-// given your own party's level.
+// Sets the level of the opposing trainer's Pokémon dynamically,
+// based on your own party's level.
 static void SetDynamicTrainerMonLevel(struct Pokemon *mon, const struct TrainerMon *partyEntry)
 {
     u16 dynamicLevel = 0;

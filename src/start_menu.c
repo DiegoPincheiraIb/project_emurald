@@ -239,8 +239,8 @@ static const struct WindowTemplate sWindowTemplate_StartMenu = {
     .bg = 0,
     .tilemapLeft = 1,
     .tilemapTop = 1,
-    .width = 7,
-    .height = 6,
+    .width = 8,
+    .height = 7,
     .paletteNum = 0xF,
     .baseBlock = 0x8
 };
@@ -370,6 +370,10 @@ static void ShowSaveInfoWindow(void);
 static void RemoveSaveInfoWindow(void);
 static void HideStartMenuWindow(void);
 static void HideStartMenuDebug(void);
+static void PrintStartMenuExtraWindowBuild(u8 windowId);
+static void PrintStartMenuExtraWindowDateTime(u8 windowId, u8 dayOfWeek, u8 hour, u8 minute);
+static void PrintStartMenuExtraWindowDate(u8 windowId, u8 month, u8 day, u8 year);
+static void PrintStartMenuExtraWindowSeason(u8 windowId, u8 month);
 static void ShowStartMenuExtraWindow(void);
 
 void SetDexPokemonPokenavFlags(void) // unused
@@ -436,7 +440,7 @@ static void BuildNormalStartMenu(void)
 
     if (FlagGet(FLAG_SYS_POKENAV_GET) == TRUE)
         AddStartMenuAction(MENU_ACTION_POKENAV);
-    
+
     // AddStartMenuAction(MENU_ACTION_STAT_EDITOR);
     AddStartMenuAction(MENU_ACTION_PLAYER);
     AddStartMenuAction(MENU_ACTION_SAVE);
@@ -1251,7 +1255,7 @@ static u8 SaveDoSaveCallback(void)
         ShowSaveMessage(gText_PlayerSavedGame, SaveSuccessCallback);
     else
         ShowSaveMessage(gText_SaveError, SaveErrorCallback);
-    
+
     DestroySprite(&gSprites[spriteId]);
     SaveStartTimer();
     return SAVE_IN_PROGRESS;
@@ -1607,32 +1611,70 @@ void Script_ForceSaveGame(struct ScriptContext *ctx)
 }
 
 static void ShowStartMenuExtraWindow(void) // Función que carga una ventana auxiliar en el menú de pausa.
-{   
+{
+    struct SiiRtcInfo rtc;
+    u8 dayOfWeek;
+    u8 hour;
+    u8 minute;
     u8 month;
+    u8 day;
     u8 year;
+
+    RtcGetInfo(&rtc);
+    dayOfWeek = rtc.dayOfWeek;
+    hour = ConvertBcdToBinary(rtc.hour);
+    minute = ConvertBcdToBinary(rtc.minute);
+    month = ConvertBcdToBinary(rtc.month);
+    day = ConvertBcdToBinary(rtc.day);
+    year = ConvertBcdToBinary(rtc.year);
+
     sSafariBallsWindowId = AddWindow(&sWindowTemplate_StartMenu);
     PutWindowTilemap(sSafariBallsWindowId);
     DrawStdWindowFrame(sSafariBallsWindowId, FALSE);
-    // First Line: DayOfWeek, hh:mm
-    FormatDecimalTimeWOSeconds(gStringVar4, Rtc_GetCurrentHour(), Rtc_GetCurrentMinute());
-    UpdateDayOfWeek();
-    StringCopy(gStringVar1, ConvertDayOfWeekInt2Str());
-    StringAppend(gStringVar1, gStringVar4);
-    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 1, 0xFF, NULL);
-    // Second line: DD MMM YY
-    month = Rtc_GetCurrentMonth();
-    FormatDecimalDateDay(gStringVar5, Rtc_GetCurrentDay());
-    StringCopy(gStringVar2, ConvertMonth2Str(month));
-    StringAppend(gStringVar5, gStringVar2);
-    year = Rtc_GetCurrentYear();
-    FormatDecimalDateYear(gStringVar3, year);
-    StringAppend(gStringVar5, gStringVar3);
-    //FormatDecimalDateV2(gStringVar4, Rtc_GetCurrentYear(), Rtc_GetCurrentMonth(), Rtc_GetCurrentDay());
-    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar5, 0, 17, 0xFF, NULL);
-    // Third line: Season
-    UpdateSeason();
-    StringCopy(gStringVar1, ConvertSeasonInt2Str());
-    AddTextPrinterParameterized(sSafariBallsWindowId, 1, gStringVar1, 0, 33, 0xFF, NULL);
+    PrintStartMenuExtraWindowBuild(sSafariBallsWindowId);
+    PrintStartMenuExtraWindowDateTime(sSafariBallsWindowId, dayOfWeek, hour, minute);
+    PrintStartMenuExtraWindowDate(sSafariBallsWindowId, month, day, year);
+    PrintStartMenuExtraWindowSeason(sSafariBallsWindowId, month);
     // Outputs Window to VRAM
     CopyWindowToVram(sSafariBallsWindowId, 2);
+}
+
+static void PrintStartMenuExtraWindowBuild(u8 windowId)
+{
+    u8 lineBuffer[32];
+
+    StringCopy(lineBuffer, gGameBuildName);
+    StringAppend(lineBuffer, gText_Space);
+    StringAppend(lineBuffer, gGameBuildVersion);
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, lineBuffer, 0, 1, TEXT_SKIP_DRAW, NULL);
+}
+
+static void PrintStartMenuExtraWindowDateTime(u8 windowId, u8 dayOfWeek, u8 hour, u8 minute)
+{
+    u8 lineBuffer[32];
+    u8 timeBuffer[16];
+
+    FormatDecimalTimeWOSeconds(timeBuffer, hour, minute);
+    VarSet(VAR_CURRENT_DAYOFWEEK, dayOfWeek);
+    StringCopy(lineBuffer, ConvertDayOfWeekInt2Str());
+    StringAppend(lineBuffer, timeBuffer);
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, lineBuffer, 0, 13, TEXT_SKIP_DRAW, NULL);
+}
+
+static void PrintStartMenuExtraWindowDate(u8 windowId, u8 month, u8 day, u8 year)
+{
+    u8 lineBuffer[32];
+    u8 yearBuffer[16];
+
+    FormatDecimalDateDay(lineBuffer, day);
+    StringAppend(lineBuffer, ConvertMonth2Str(month));
+    FormatDecimalDateYear(yearBuffer, year);
+    StringAppend(lineBuffer, yearBuffer);
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, lineBuffer, 0, 25, TEXT_SKIP_DRAW, NULL);
+}
+
+static void PrintStartMenuExtraWindowSeason(u8 windowId, u8 month)
+{
+    VarSet(VAR_CURRENT_SEASON, month % 4);
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, ConvertSeasonInt2Str(), 0, 37, TEXT_SKIP_DRAW, NULL);
 }

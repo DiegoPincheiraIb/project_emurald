@@ -319,30 +319,48 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIn
 {
     u8 min;
     u8 max;
+    u8 maxTeamLevel = 1;
+    u8 maxAllowedLevel;
     u8 range;
     u8 rand;
+    u8 fixedLVL;
+    u8 count;
+    u8 validMons = 0;
+    u16 totalLevel = 0;
 
-    u8 count = gPlayerPartyCount;
-    u8 fixedLVL = 0;
+    for (count = 0; count < gPlayerPartyCount; count++)
+    {
+        if (!GetMonData(&gPlayerParty[count], MON_DATA_SANITY_IS_EGG)
+         && GetMonData(&gPlayerParty[count], MON_DATA_SPECIES) != SPECIES_NONE)
+        {
+            u8 level = GetMonData(&gPlayerParty[count], MON_DATA_LEVEL);
+            totalLevel += level;
+            validMons++;
+            if (level > maxTeamLevel)
+                maxTeamLevel = level;
+        }
+    }
+
+    if (validMons == 0)
+        return wildPokemon[wildMonIndex].maxLevel;
+
+    fixedLVL = totalLevel / validMons;
+    maxAllowedLevel = (maxTeamLevel > 1) ? maxTeamLevel - 1 : 1;
 
     if (LURE_STEP_COUNT == 0)
     {
-        while (count-- > 0)
-        {
-            if (GetMonData(&gPlayerParty[count], MON_DATA_SPECIES) != SPECIES_NONE){
-                fixedLVL += (GetMonData(&gPlayerParty[count], MON_DATA_LEVEL));
-            }
-        }
-        fixedLVL = fixedLVL / gPlayerPartyCount;
-
         // Make sure minimum level is less than maximum level
         {
-            min = fixedLVL - 3;
-            max = fixedLVL + 1;
+            min = fixedLVL;
+            max = fixedLVL + 2;
+            if (max > maxAllowedLevel)
+                max = maxAllowedLevel;
         }
         // Clamp min to the wild pokemon's level range
         if (min <= 0)
             min = 1;
+        if (min > max)
+            min = max;
         range = max - min + 1;
         rand = Random() % range;
 
@@ -371,10 +389,16 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIn
     {
         // Looks for the max level of all slots that share the same species as the selected slot.
         max = GetMaxLevelOfSpeciesInWildTable(wildPokemon, wildPokemon[wildMonIndex].species, area);
-        if (max > 0)
-            return max + 1;
-        else // Failsafe
-            return wildPokemon[wildMonIndex].maxLevel + 1;
+        if (max == 0)
+            max = wildPokemon[wildMonIndex].maxLevel;
+
+        if (max > maxAllowedLevel)
+            max = maxAllowedLevel;
+
+        if (max == 0)
+            max = 1;
+
+        return max;
     }
 }
 

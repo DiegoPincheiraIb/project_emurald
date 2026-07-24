@@ -1967,10 +1967,8 @@ static u32 GetTrainerMonAbilityNum(const struct TrainerMon *partyEntry, u32 pers
     {
         const struct SpeciesInfo *speciesInfo = &gSpeciesInfo[species];
         abilityNum = personalityHash % 3;
-        while (speciesInfo->abilities[abilityNum] == ABILITY_NONE)
-        {
-            abilityNum--;
-        }
+        for (u32 tries = 0; tries < 3 && speciesInfo->abilities[abilityNum] == ABILITY_NONE; tries++)
+            abilityNum = (abilityNum + 1) % 3;
     }
 
     return abilityNum;

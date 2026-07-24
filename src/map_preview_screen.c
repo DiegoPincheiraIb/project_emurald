@@ -16,6 +16,9 @@
 #include "constants/rgb.h"
 
 static EWRAM_DATA bool8 sAllocedBg0TilemapBuffer = FALSE;
+static EWRAM_DATA bool8 sMapPreviewActive = FALSE;
+static EWRAM_DATA u16 sMapPreviewScriptBg0Priority = 0;
+static EWRAM_DATA u16 sMapPreviewScriptDispcnt = 0;
 
 static void Task_RunMapPreviewScreenForest(u8 taskId);
 static void Task_RunMapPreview_Script(u8 taskId);
@@ -452,7 +455,7 @@ void MapPreview_LoadGfx(u8 mapsec)
             LoadPalette(sMapPreviewImageData[sMapPreviewScreenData[idx].image].palptr, BG_PLTT_ID(13), 3 * PLTT_SIZE_4BPP);
         else
             LoadPalette(sMapPreviewImageData[sMapPreviewScreenData[idx].image].palptr, BG_PLTT_ID(0), 16 * PLTT_SIZE_4BPP);
-            
+
        DecompressAndCopyTileDataToVram(0, sMapPreviewImageData[sMapPreviewScreenData[idx].image].tilesptr, 0, 0, 0);
        if (GetBgTilemapBuffer(0) == NULL)
        {
@@ -482,10 +485,21 @@ bool32 MapPreview_IsGfxLoadFinished(void)
     return FreeTempTileDataBuffersIfPossible();
 }
 
+void MapPreview_SetActive(bool8 active)
+{
+    sMapPreviewActive = active;
+}
+
+bool8 MapPreview_IsActive(void)
+{
+    return sMapPreviewActive;
+}
+
 void MapPreview_StartForestTransition(u8 mapsec)
 {
     u8 taskId;
 
+    MapPreview_SetActive(TRUE);
     taskId = CreateTask(Task_RunMapPreviewScreenForest, 0);
     gTasks[taskId].data[2] = GetBgAttribute(0, BG_ATTR_PRIORITY);
     gTasks[taskId].data[4] = GetGpuReg(REG_OFFSET_BLDCNT);
@@ -501,6 +515,9 @@ void MapPreview_StartForestTransition(u8 mapsec)
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
     SetGpuRegBits(REG_OFFSET_WININ, WININ_WIN0_CLR | WININ_WIN1_CLR);
     SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WIN01_CLR);
+    // Show only the map preview layer while the card is visible.
+    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
     gTasks[taskId].data[11] = MapPreview_CreateMapNameWindow(mapsec);
     LockPlayerFieldControls();
 }
@@ -585,6 +602,12 @@ static void Task_RunMapPreviewScreenForest(u8 taskId)
         }
         break;
     case 4:
+        if (data[12] == 0)
+        {
+            SetGpuReg(REG_OFFSET_DISPCNT, data[3]);
+            data[12] = 1;
+        }
+
         switch (data[1])
         {
         case 0:
@@ -615,6 +638,7 @@ static void Task_RunMapPreviewScreenForest(u8 taskId)
         if (!IsDma3ManagerBusyWithBgCopy())
         {
             MapPreview_Unload(data[11]);
+            MapPreview_SetActive(FALSE);
             SetBgAttribute(0, BG_ATTR_PRIORITY, data[2]);
             SetGpuReg(REG_OFFSET_DISPCNT, data[3]);
             SetGpuReg(REG_OFFSET_BLDCNT, data[4]);
@@ -698,6 +722,13 @@ void Script_MapPreview(void)
 {
     SetVBlankCallback(NULL);
     gMain.savedCallback = CB2_ReturnToFieldContinueScript;
+    MapPreview_SetActive(TRUE);
+    sMapPreviewScriptBg0Priority = GetBgAttribute(0, BG_ATTR_PRIORITY);
+    sMapPreviewScriptDispcnt = GetGpuReg(REG_OFFSET_DISPCNT);
+    SetBgAttribute(0, BG_ATTR_PRIORITY, 0);
+    MapPreview_InitBgs();
+    ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+    SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
     MapPreview_LoadGfx(gMapHeader.regionMapSectionId);
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
     SetVBlankCallback(VblankCB_MapPreviewScript);
@@ -738,6 +769,7 @@ static void Task_RunMapPreview_Script(u8 taskId)
         frameCounter++;
         if (frameCounter > MPS_DURATION_SCRIPT || JOY_HELD(B_BUTTON))
         {
+            SetGpuReg(REG_OFFSET_DISPCNT, sMapPreviewScriptDispcnt);
             BeginNormalPaletteFade(PALETTES_ALL, MPS_BASIC_FADE_SPEED, 0, 16, RGB_BLACK);
             frameCounter = 0;
             taskStep++;
@@ -747,6 +779,9 @@ static void Task_RunMapPreview_Script(u8 taskId)
         if (!UpdatePaletteFade())
         {
             MapPreview_Unload(MPWindowId);
+            MapPreview_SetActive(FALSE);
+            SetBgAttribute(0, BG_ATTR_PRIORITY, sMapPreviewScriptBg0Priority);
+            SetGpuReg(REG_OFFSET_DISPCNT, sMapPreviewScriptDispcnt);
             DestroyTask(taskId);
             SetMainCallback2(gMain.savedCallback);
         }

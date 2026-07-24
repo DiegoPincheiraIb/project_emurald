@@ -794,7 +794,7 @@ void FadeScreen(u8 mode, s8 delay)
         {
             gWeatherPtr->fadeScreenCounter = 0; // Triggers gamma-shift-based fade-in
         }
-        else if (MapHasNaturalLight(gMapHeader.mapType))
+        else if (MapHasNaturalLight(gMapHeader.mapType) && !MapPreview_IsActive())
         {
             UpdateAltBgPalettes(PALETTES_BG);
             BeginTimeOfDayPaletteFade(PALETTES_ALL, delay, 16, 0, &gTimeBlend.startBlend, &gTimeBlend.endBlend, gTimeBlend.weight, fadeColor);
@@ -1003,7 +1003,8 @@ void Weather_SetBlendCoeffs(u8 eva, u8 evb)
     gWeatherPtr->targetBlendEVB = evb;
 
     // don't update BLDALPHA if a hardware fade is on-screen
-    if ((GetGpuReg(REG_OFFSET_BLDCNT) & BLDCNT_EFFECT_EFF_MASK) < BLDCNT_EFFECT_LIGHTEN)
+    if (!MapPreview_IsActive()
+     && (GetGpuReg(REG_OFFSET_BLDCNT) & BLDCNT_EFFECT_EFF_MASK) < BLDCNT_EFFECT_LIGHTEN)
         SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(eva, evb));
 }
 
@@ -1018,6 +1019,9 @@ void Weather_SetTargetBlendCoeffs(u8 eva, u8 evb, int delay)
 
 bool8 Weather_UpdateBlend(void)
 {
+    if (MapPreview_IsActive())
+        return FALSE;
+
     if (gWeatherPtr->currBlendEVA == gWeatherPtr->targetBlendEVA
      && gWeatherPtr->currBlendEVB == gWeatherPtr->targetBlendEVB)
         return TRUE;

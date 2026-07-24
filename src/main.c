@@ -41,7 +41,7 @@ const u8 gGameVersion = GAME_VERSION;
 const u8 gGameLanguage = GAME_LANGUAGE; // English
 
 const u8 gGameBuildName[] = _("DEMO");
-const u8 gGameBuildVersion[] = _("v0.0.2");
+const u8 gGameBuildVersion[] = _("v0.0.3");
 
 const char BuildDateTime[] = "2005 02 21 11:10";
 

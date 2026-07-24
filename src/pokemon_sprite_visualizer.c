@@ -901,7 +901,7 @@ static void LoadBattleBg(u8 battleBgType, enum BattleEnvironments battleEnvironm
     case MAP_BATTLE_SCENE_NORMAL:
         DecompressDataWithHeaderVram(gBattleEnvironmentInfo[battleEnvironment].background.tileset, (void*)(BG_CHAR_ADDR(2)));
         DecompressDataWithHeaderVram(gBattleEnvironmentInfo[battleEnvironment].background.tilemap, (void*)(BG_SCREEN_ADDR(26)));
-        LoadPalette(gBattleEnvironmentInfo[battleEnvironment].background.palette, 0x20, 0x60);
+        LoadPalette(gBattleEnvironmentInfo[battleEnvironment].background.palette[GetTimeOfDay()], 0x20, 0x60);
         break;
     case MAP_BATTLE_SCENE_GYM:
         DecompressDataWithHeaderVram(gBattleEnvironmentTiles_Building, (void*)(BG_CHAR_ADDR(2)));

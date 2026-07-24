@@ -27,6 +27,7 @@
 #include "constants/item.h"
 #include "constants/items.h"
 #include "constants/layouts.h"
+#include "constants/siirtc.h"
 #include "constants/weather.h"
 
 extern const u8 EventScript_SprayWoreOff[];
@@ -185,12 +186,54 @@ u32 ChooseWildMonIndex_Land(void)
 {
     u8 wildMonIndex = 0;
     bool8 swap = FALSE;
-    u8 timeOfDay, currentSeason;
+
+    if (!OW_SEASONAL_LAND_ENCOUNTERS)
+    {
+        u8 rand = Random() % ENCOUNTER_CHANCE_LAND_MONS_TOTAL;
+
+        if (rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_0)
+            wildMonIndex = 0;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_0 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_1)
+            wildMonIndex = 1;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_1 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_2)
+            wildMonIndex = 2;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_2 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_3)
+            wildMonIndex = 3;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_3 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_4)
+            wildMonIndex = 4;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_4 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_5)
+            wildMonIndex = 5;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_5 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_6)
+            wildMonIndex = 6;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_6 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_7)
+            wildMonIndex = 7;
+        else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_7 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_8)
+            wildMonIndex = 8;
+        else
+            wildMonIndex = 9;
+
+        if (LURE_STEP_COUNT != 0 && (Random() % 10 < 2))
+            swap = TRUE;
+
+        if (swap)
+            wildMonIndex = 9 - wildMonIndex;
+
+        return wildMonIndex;
+    }
+
+    u8 timeOfDay = TIME_OF_DAY_DEFAULT;
+    u8 currentSeason;
     u8 rand = Random() % 100;
     UpdateSeason();
-    RtcCalcLocalTime();
-    timeOfDay = GetTimeOfDay();
+    if (OW_TIME_OF_DAY_ENCOUNTERS)
+    {
+        RtcCalcLocalTime();
+        timeOfDay = GetTimeOfDay();
+    }
     currentSeason = VarGet(VAR_CURRENT_SEASON);
+    if (currentSeason > SEASON_SPRING)
+        currentSeason = SEASON_SUMMER;
+
     if (rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_0)
         wildMonIndex = 0;
     else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_0 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_1)

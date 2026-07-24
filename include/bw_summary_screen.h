@@ -16,8 +16,8 @@
 
 // configs
 #define BW_SUMMARY_AUTO_FORMAT_MOVE_DESCRIPTIONS    TRUE                // automatically formats move descriptions to fit the new box size. disable if you want to format them manually
-#define BW_SUMMARY_NATURE_COLORS                    TRUE                // color stats increased or reduced by nature, red = boosted, blue = reduced
-#define BW_SUMMARY_NATURE_ARROWS                    FALSE               // arrows to show stats increased or reduced by nature
+#define BW_SUMMARY_NATURE_COLORS                    FALSE               // color stats increased or reduced by nature, red = boosted, blue = reduced
+#define BW_SUMMARY_NATURE_ARROWS                    TRUE                // arrows to show stats increased or reduced by nature
 #define BW_SUMMARY_CATEGORY_ICONS                   TRUE                // determines whether category (split) icons are shown or not
 #define BW_SUMMARY_IV_EV_DISPLAY                    BW_IV_EV_HIDDEN     // determines how to show IVs and EVs
 #define BW_SUMMARY_DECAP                            FALSE               // indicates if summary screen-specific strings should be decapitalized
@@ -41,7 +41,7 @@
 /* Info for users
 
 General tilemap setup
-BG3 - scrolling grid background (or not scrolling if you turned the config off) 
+BG3 - scrolling grid background (or not scrolling if you turned the config off)
 BG2 - main UI overlayed on scrolling BG
 BG1 - pop in move effect windows
 BG0 - text windows

@@ -389,8 +389,15 @@ static void Task_MapPreviewScreen_0(u8 taskId)
     {
     case 0:
         SetWordTaskArg(taskId, 5, (uintptr_t)gMain.vblankCallback);
+        MapPreview_SetActive(TRUE);
+        data[7] = GetBgAttribute(0, BG_ATTR_PRIORITY);
+        data[8] = GetGpuReg(REG_OFFSET_DISPCNT);
         SetVBlankCallback(NULL);
         MapPreview_InitBgs();
+        SetBgAttribute(0, BG_ATTR_PRIORITY, 0);
+        // Show only the map preview layer while the card is visible.
+        ClearGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON | DISPCNT_OBJWIN_ON);
+        SetGpuRegBits(REG_OFFSET_DISPCNT, DISPCNT_BG0_ON);
         MapPreview_LoadGfx(data[3]);
         BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
         data[0]++;
@@ -422,6 +429,7 @@ static void Task_MapPreviewScreen_0(u8 taskId)
         data[1]++;
         if (data[1] > data[2] || JOY_HELD(B_BUTTON))
         {
+            SetGpuReg(REG_OFFSET_DISPCNT, data[8]);
             if (MapHasPreviewScreen_HandleQLState2(gMapHeader.regionMapSectionId, MPS_TYPE_BASIC) == TRUE)
             {
                 BeginNormalPaletteFade(PALETTES_ALL, MPS_BASIC_FADE_SPEED, 0, 16, RGB_BLACK);
@@ -441,6 +449,9 @@ static void Task_MapPreviewScreen_0(u8 taskId)
                 data[i] = 0;
             }
             MapPreview_Unload(data[4]);
+            MapPreview_SetActive(FALSE);
+            SetBgAttribute(0, BG_ATTR_PRIORITY, data[7]);
+            SetGpuReg(REG_OFFSET_DISPCNT, data[8]);
             if (MapHasPreviewScreen_HandleQLState2(gMapHeader.regionMapSectionId, MPS_TYPE_BASIC) == TRUE)
             {
                 SetMainCallback2(gMain.savedCallback);

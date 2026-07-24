@@ -1610,7 +1610,8 @@ bool8 Ash_Finish(void)
         }
         break;
     case 2:
-        SetGpuReg(REG_OFFSET_BLDALPHA, 0);
+        if (!MapPreview_IsActive())
+            SetGpuReg(REG_OFFSET_BLDALPHA, 0);
         gWeatherPtr->finishStep++;
         return FALSE;
     default:

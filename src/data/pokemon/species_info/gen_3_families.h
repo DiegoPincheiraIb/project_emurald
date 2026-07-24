@@ -16,7 +16,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 62 : 65,
         .evYield_Speed = 1,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -72,7 +72,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sTreeckoLevelUpLearnset,
         .teachableLearnset = sTreeckoTeachableLearnset,
         .eggMoveLearnset = sTreeckoEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_GROVYLE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_GROVYLE}),
     },
 
     [SPECIES_GROVYLE] =
@@ -87,7 +87,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 142 : 141,
         .evYield_Speed = 2,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -142,7 +142,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sGrovyleLevelUpLearnset,
         .teachableLearnset = sGrovyleTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_SCEPTILE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 62, SPECIES_SCEPTILE}),
     },
 
     [SPECIES_SCEPTILE] =
@@ -163,7 +163,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 208,
     #endif
         .evYield_Speed = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -233,7 +233,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_8) ? 315 : 284,
         .evYield_Speed = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -304,7 +304,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 62 : 65,
         .evYield_SpAttack = 1,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -373,7 +373,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sTorchicLevelUpLearnset,
         .teachableLearnset = sTorchicTeachableLearnset,
         .eggMoveLearnset = sTorchicEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_COMBUSKEN}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_COMBUSKEN}),
     },
 
     [SPECIES_COMBUSKEN] =
@@ -389,7 +389,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 142,
         .evYield_Attack = 1,
         .evYield_SpAttack = 1,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -455,7 +455,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sCombuskenLevelUpLearnset,
         .teachableLearnset = sCombuskenTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_BLAZIKEN}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 62, SPECIES_BLAZIKEN}),
     },
 
     [SPECIES_BLAZIKEN] =
@@ -476,7 +476,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 209,
     #endif
         .evYield_Attack = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -561,7 +561,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_8) ? 315 : 284,
         .evYield_Attack = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -632,7 +632,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 62 : 65,
         .evYield_Attack = 1,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -688,7 +688,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sMudkipLevelUpLearnset,
         .teachableLearnset = sMudkipTeachableLearnset,
         .eggMoveLearnset = sMudkipEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_MARSHTOMP}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_MARSHTOMP}),
     },
 
     [SPECIES_MARSHTOMP] =
@@ -703,7 +703,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 142 : 143,
         .evYield_Attack = 2,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -762,7 +762,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sMarshtompLevelUpLearnset,
         .teachableLearnset = sMarshtompTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_SWAMPERT}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 62, SPECIES_SWAMPERT}),
     },
 
     [SPECIES_SWAMPERT] =
@@ -783,7 +783,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 210,
     #endif
         .evYield_Attack = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -855,7 +855,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_8) ? 318 : 286,
         .evYield_Attack = 3,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_SLOW,
@@ -1923,7 +1923,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sLotadLevelUpLearnset,
         .teachableLearnset = sLotadTeachableLearnset,
         .eggMoveLearnset = sLotadEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 14, SPECIES_LOMBRE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_LOMBRE}),
     },
 
     [SPECIES_LOMBRE] =
@@ -1994,7 +1994,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sLombreLevelUpLearnset,
         .teachableLearnset = sLombreTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_ITEM, ITEM_WATER_STONE, SPECIES_LUDICOLO}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 62, SPECIES_LUDICOLO}),
     },
 
     [SPECIES_LUDICOLO] =
@@ -2163,7 +2163,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSeedotLevelUpLearnset,
         .teachableLearnset = sSeedotTeachableLearnset,
         .eggMoveLearnset = sSeedotEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 14, SPECIES_NUZLEAF}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 26, SPECIES_NUZLEAF}),
     },
 
     [SPECIES_NUZLEAF] =
@@ -2251,7 +2251,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sNuzleafLevelUpLearnset,
         .teachableLearnset = sNuzleafTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_ITEM, ITEM_LEAF_STONE, SPECIES_SHIFTRY}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 50, SPECIES_SHIFTRY}),
     },
 
     [SPECIES_SHIFTRY] =
@@ -2569,7 +2569,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sWingullLevelUpLearnset,
         .teachableLearnset = sWingullTeachableLearnset,
         .eggMoveLearnset = sWingullEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 25, SPECIES_PELIPPER}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 40, SPECIES_PELIPPER}),
     },
 
     [SPECIES_PELIPPER] =
@@ -2733,7 +2733,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sRaltsLevelUpLearnset,
         .teachableLearnset = sRaltsTeachableLearnset,
         .eggMoveLearnset = sRaltsEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_KIRLIA}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 28, SPECIES_KIRLIA}),
     },
 
     [SPECIES_KIRLIA] =
@@ -2801,11 +2801,8 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sKirliaLevelUpLearnset,
         .teachableLearnset = sKirliaTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 30, SPECIES_GARDEVOIR}
-                            #if P_GEN_4_CROSS_EVOS
-                                ,{EVO_ITEM, ITEM_DAWN_STONE, SPECIES_GALLADE, CONDITIONS({IF_GENDER, MON_MALE})}
-                            #endif
-                            ),
+        .evolutions = EVOLUTION({EVO_LEVEL, 60, SPECIES_GARDEVOIR},
+                                {EVO_LEVEL_HOLD_ITEM, 60, SPECIES_GALLADE, CONDITIONS({IF_HOLD_ITEM, ITEM_BLACK_BELT})}),
     },
 
     [SPECIES_GARDEVOIR] =
@@ -3490,7 +3487,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSlakothLevelUpLearnset,
         .teachableLearnset = sSlakothTeachableLearnset,
         .eggMoveLearnset = sSlakothEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 18, SPECIES_VIGOROTH}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 38, SPECIES_VIGOROTH}),
     },
 
     [SPECIES_VIGOROTH] =
@@ -3562,7 +3559,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         )
         .levelUpLearnset = sVigorothLevelUpLearnset,
         .teachableLearnset = sVigorothTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_SLAKING}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 66, SPECIES_SLAKING}),
     },
 
     [SPECIES_SLAKING] =
@@ -3713,7 +3710,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sNincadaLevelUpLearnset,
         .teachableLearnset = sNincadaTeachableLearnset,
         .eggMoveLearnset = sNincadaEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_NINJASK},
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_NINJASK},
                             #if P_SHEDINJA_BALL >= GEN_4
                                 {EVO_SPLIT_FROM_EVO, SPECIES_NINJASK, SPECIES_SHEDINJA, CONDITIONS({IF_BAG_ITEM_COUNT, ITEM_POKE_BALL, 1})}),
                             #else
@@ -6255,7 +6252,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sGulpinLevelUpLearnset,
         .teachableLearnset = sGulpinTeachableLearnset,
         .eggMoveLearnset = sGulpinEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 26, SPECIES_SWALOT}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 39, SPECIES_SWALOT}),
     },
 
     [SPECIES_SWALOT] =
@@ -6416,7 +6413,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sCarvanhaLevelUpLearnset,
         .teachableLearnset = sCarvanhaTeachableLearnset,
         .eggMoveLearnset = sCarvanhaEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 30, SPECIES_SHARPEDO}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 41, SPECIES_SHARPEDO}),
     },
 
     [SPECIES_SHARPEDO] =
@@ -7742,7 +7739,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSwabluLevelUpLearnset,
         .teachableLearnset = sSwabluTeachableLearnset,
         .eggMoveLearnset = sSwabluEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 35, SPECIES_ALTARIA}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 50, SPECIES_ALTARIA}),
     },
 
     [SPECIES_ALTARIA] =
@@ -8440,7 +8437,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sCorphishLevelUpLearnset,
         .teachableLearnset = sCorphishTeachableLearnset,
         .eggMoveLearnset = sCorphishEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 30, SPECIES_CRAWDAUNT}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 35, SPECIES_CRAWDAUNT}),
     },
 
     [SPECIES_CRAWDAUNT] =
@@ -8682,7 +8679,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     #endif
         .evYield_SpDefense = 1,
         .itemRare = ITEM_BIG_ROOT,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 30,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_ERRATIC,
@@ -8760,7 +8757,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     #endif
         .evYield_SpDefense = 2,
         .itemRare = ITEM_BIG_ROOT,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 30,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_ERRATIC,
@@ -8839,7 +8836,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 119,
     #endif
         .evYield_Attack = 1,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 30,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_ERRATIC,
@@ -8918,7 +8915,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .expYield = 200,
     #endif
         .evYield_Attack = 2,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 30,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_ERRATIC,
@@ -9051,9 +9048,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sFeebasLevelUpLearnset,
         .teachableLearnset = sFeebasTeachableLearnset,
         .eggMoveLearnset = sFeebasEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 0, SPECIES_MILOTIC, CONDITIONS({IF_MIN_BEAUTY, 170})},
-                                {EVO_TRADE, 0, SPECIES_MILOTIC, CONDITIONS({IF_HOLD_ITEM, ITEM_PRISM_SCALE})},
-                                {EVO_ITEM, ITEM_PRISM_SCALE, SPECIES_MILOTIC}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 46, SPECIES_MILOTIC}),
     },
 
     [SPECIES_MILOTIC] =
@@ -11237,7 +11232,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .evYield_HP = 1,
         .evYield_Defense = 1,
         .itemRare = ITEM_DEEP_SEA_SCALE,
-        .genderRatio = PERCENT_FEMALE(12.5),
+        .genderRatio = PERCENT_FEMALE(42.5),
         .eggCycles = 40,
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_SLOW,

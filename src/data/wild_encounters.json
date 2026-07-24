@@ -10600,16 +10600,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_CHARMANDER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_VENUSAUR"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMANDER"
               }
             ]
           }
@@ -10668,16 +10658,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMANDER"
               }
             ]
           }
@@ -10726,16 +10706,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARIZARD"
               },
               {
                 "min_level": 5,
@@ -10804,16 +10774,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_SQUIRTLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARIZARD"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SQUIRTLE"
               }
             ]
           }
@@ -10872,16 +10832,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_WARTORTLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SQUIRTLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_WARTORTLE"
               }
             ]
           }
@@ -10920,16 +10870,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_SQUIRTLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_WARTORTLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_WARTORTLE"
               },
               {
                 "min_level": 5,
@@ -11008,16 +10948,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMELEON"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CHARMELEON"
               }
             ]
           }
@@ -11082,16 +11012,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_DUSCLOPS"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SEVIPER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_MILOTIC"
               }
             ]
           }
@@ -11150,16 +11070,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_ELECTRODE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SEVIPER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_MILOTIC"
               }
             ]
           }
@@ -11218,16 +11128,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_BRELOOM"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SEVIPER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_MILOTIC"
               }
             ]
           }
@@ -11286,16 +11186,6 @@
                 "min_level": 5,
                 "max_level": 5,
                 "species": "SPECIES_WOBBUFFET"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SEVIPER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_MILOTIC"
               }
             ]
           }

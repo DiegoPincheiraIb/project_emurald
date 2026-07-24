@@ -2207,11 +2207,8 @@ static void EvolveTrainerMonIfPossible(struct Pokemon *mon)
                 if (evolutions[i].method != EVO_ITEM)
                     continue;
 
-                if (!ignoreItemRequirements)
-                {
-                    if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
-                        continue;
-                }
+                if (!DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, NULL, CHECK_EVO))
+                    continue;
 
                 possibleTargets[possibleCount++] = evolutions[i].targetSpecies;
                 if (possibleCount >= ARRAY_COUNT(possibleTargets))

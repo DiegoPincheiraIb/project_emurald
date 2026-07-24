@@ -296,6 +296,11 @@ RusturfTunnel_EventScript_Peeko::
 	release
 	end
 
+RusturfTunnel_EventScript_EndDemo::
+	playse SE_SHINY
+	msgbox RusturfTunnel_Text_ProgressDemo, MSGBOX_DEFAULT
+	closemessage
+	end
 RusturfTunnel_EventScript_Grunt::
 	lock
 	faceplayer
@@ -525,3 +530,14 @@ RusturfTunnel_Text_MikePostBattle:
 	.string "protect POKéMON, right?\l"
 	.string "There's a feel-good story!$"
 
+RusturfTunnel_Text_ProgressDemo:
+	.string "Gracias por jugar a la demo!\p"
+	.string "Lamentablemente no está completo\n"
+	.string "a partir de este punto :(\p"
+	.string "Por favor, notifica todos los bugs que\n"
+	.string "pilles para seguir puliendo el hack!\p"
+	.string "Por último, no olvides darme tu\n"
+	.string "opinión de como va hasta ahora!\p"
+	.string "Tu feedback es vital para que\n"
+	.string "siga dedicándole tiempo c:\p"
+	.string "Atte. -Diego.$"

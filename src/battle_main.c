@@ -57,6 +57,7 @@
 #include "test_runner.h"
 #include "text.h"
 #include "trainer_class_pools.h"
+#include "trainer_pools.h"
 #include "trig.h"
 #include "tv.h"
 #include "util.h"
@@ -2248,7 +2249,8 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const 
 {
     s32 i;
     u8 monsCount;
-    u32 teamSeed = Random();
+    u32 teamSeed = 0;
+    u32 monIndices[PARTY_SIZE] = {0};
     if (battleTypeFlags & BATTLE_TYPE_TRAINER && !(battleTypeFlags & (BATTLE_TYPE_FRONTIER
                                                                         | BATTLE_TYPE_EREADER_TRAINER
                                                                         | BATTLE_TYPE_TRAINER_HILL)))
@@ -2257,10 +2259,12 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const 
             ZeroEnemyPartyMons();
 
         monsCount = GetTrainerBattleMonsCount(trainer, battleTypeFlags);
+        DoTrainerPartyPool(trainer, monIndices, monsCount, battleTypeFlags);
+        teamSeed = Random();
 
         for (i = 0; i < monsCount; i++)
         {
-            u32 monIndex = i;
+            u32 monIndex = monIndices[i];
             s32 ball;
             u32 personalityHash = GeneratePartyHash(trainer, i);
             const struct TrainerMon *partyEntry = &trainer->party[monIndex];
@@ -2268,10 +2272,13 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const 
             u16 species = resolvedPartyEntry.species;
             u32 otIdType;
             u32 fixedOtId;
+            bool32 shouldAutoEvolve = FALSE;
 
             // Prefer predefined team pools by trainer id; otherwise fallback to class random mon pools.
-            if (!TryApplyTrainerTeamPoolMon(trainerId, teamSeed, monIndex, &resolvedPartyEntry, &species))
-                TryApplyTrainerClassPoolMon(trainer->trainerClass, Random(), &resolvedPartyEntry, &species);
+            if (TryApplyTrainerTeamPoolMon(trainerId, teamSeed, monIndex, &resolvedPartyEntry, &species))
+                shouldAutoEvolve = TRUE;
+            else if (TryApplyTrainerClassPoolMon(trainer->trainerClass, Random(), &resolvedPartyEntry, &species))
+                shouldAutoEvolve = TRUE;
 
             u32 personalityValue = BuildTrainerMonPersonality(trainer, &resolvedPartyEntry, personalityHash, species);
 
@@ -2284,7 +2291,8 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, u16 trainerId, const 
             // EVO_LEVEL_HOLD_ITEM needs the trainer-defined held item before evolution checks.
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &resolvedPartyEntry.heldItem);
 
-            EvolveTrainerMonIfPossible(&party[i]);
+            if (shouldAutoEvolve)
+                EvolveTrainerMonIfPossible(&party[i]);
             species = GetMonData(&party[i], MON_DATA_SPECIES);
 
             //* ================    POKEMON DATA CONFIGURATION    ==============

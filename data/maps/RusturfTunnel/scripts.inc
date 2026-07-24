@@ -297,9 +297,10 @@ RusturfTunnel_EventScript_Peeko::
 	end
 
 RusturfTunnel_EventScript_EndDemo::
+	lockall
 	playse SE_SHINY
 	msgbox RusturfTunnel_Text_ProgressDemo, MSGBOX_DEFAULT
-	closemessage
+	releaseall
 	end
 RusturfTunnel_EventScript_Grunt::
 	lock

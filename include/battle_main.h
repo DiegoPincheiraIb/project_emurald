@@ -25,6 +25,34 @@ struct MultiPartnerMenuPokemon
 #define BOUNCE_MON          0x0
 #define BOUNCE_HEALTHBOX    0x1
 
+#define BATTLE_INTRO_MON_SLIDE_START_X        240
+#define BATTLE_INTRO_MON_SLIDE_SPEED          4
+#define BATTLE_INTRO_TRAINER_SLIDE_START_X    96
+#define BATTLE_INTRO_TRAINER_SLIDE_SPEED      4
+#define BATTLE_INTRO_BG_WIPE_START_X          240
+#define BATTLE_INTRO_BG_WIPE_SPEED            4
+#define BATTLE_INTRO_BG_SLIDE_SLOW_SPEED      12
+#define BATTLE_INTRO_BG_SLIDE_FAST_SPEED      16
+#define BATTLE_INTRO_BG_SLIDE_LINK_SPEED      6
+
+static inline s16 BattleIntroSlideOffsetTowardZero(s16 offset, s16 speed)
+{
+    if (offset > 0)
+    {
+        offset -= speed;
+        if (offset < 0)
+            offset = 0;
+    }
+    else if (offset < 0)
+    {
+        offset += speed;
+        if (offset > 0)
+            offset = 0;
+    }
+
+    return offset;
+}
+
 enum BattleIntroStates
 {
     BATTLE_INTRO_STATE_GET_MON_DATA,

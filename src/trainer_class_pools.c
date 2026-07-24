@@ -35,6 +35,8 @@ bool32 TryGetTrainerClassPoolSpecies(enum TrainerClassID trainerClass, u32 slot,
     {
         if (sTrainerClassSpeciesPools[i].trainerClass == trainerClass)
         {
+            if (sTrainerClassSpeciesPools[i].speciesPoolCount == 0)
+                return FALSE;
             *speciesOut = sTrainerClassSpeciesPools[i].speciesPool[slot % sTrainerClassSpeciesPools[i].speciesPoolCount];
             return TRUE;
         }

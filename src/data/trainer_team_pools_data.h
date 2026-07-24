@@ -79,26 +79,35 @@ TEAM_EV_SPREAD(sTeamPresetEvSupport, 252, 0, 128, 0, 128, 0);
 #define TEAM_MON_PRESET_SUPPORT(speciesId, itemId, abilityId, movesPtr, levelValue) \
     TEAM_MON_COMP(speciesId, itemId, sTeamPresetEvSupport, abilityId, NATURE_BOLD, movesPtr, levelValue)
 
-TEAM_EV_SPREAD(sRoxanneTeamAEvAtkDef, 4, 252, 252, 0, 0, 0);
-TEAM_EV_SPREAD(sRoxanneTeamAEvBulky, 252, 0, 0, 0, 252, 4);
-TEAM_EV_SPREAD(sRoxanneTeamBEvSpDef, 252, 0, 4, 0, 252, 0);
-TEAM_EV_SPREAD(sRoxanneTeamBEvAtkSpeed, 0, 252, 0, 0, 4, 252);
 
-TEAM_MOVESET(sRoxanneTeamAMovesGeodude, MOVE_ROCK_THROW, MOVE_MUD_SPORT, MOVE_TACKLE, MOVE_NONE);
-TEAM_MOVESET(sRoxanneTeamAMovesNosepass, MOVE_ROCK_TOMB, MOVE_HARDEN, MOVE_TACKLE, MOVE_NONE);
-TEAM_MOVESET(sRoxanneTeamBMovesNosepass, MOVE_ROCK_TOMB, MOVE_THUNDER_WAVE, MOVE_TACKLE, MOVE_NONE);
-TEAM_MOVESET(sRoxanneTeamBMovesGeodude, MOVE_ROCK_THROW, MOVE_DEFENSE_CURL, MOVE_TACKLE, MOVE_NONE);
+
+//* ============================================================================
+//* ==================              POOLS              =========================
+//* ============================================================================
+
+//! ============================    ROXANNE    ================================
+
+TEAM_MOVESET(sRoxanneTeamMovesShuckle,  MOVE_STEALTH_ROCK, MOVE_STICKY_WEB,   MOVE_WITHDRAW,    MOVE_ROCK_TOMB);
+TEAM_MOVESET(sRoxanneTeamMovesKabuto,   MOVE_WATER_GUN,    MOVE_SAND_ATTACK,  MOVE_ABSORB,      MOVE_SCRATCH);
+TEAM_MOVESET(sRoxanneTeamMovesCranidos, MOVE_ROCK_SMASH,   MOVE_HEADBUTT,     MOVE_TAKE_DOWN,   MOVE_LEER);
+TEAM_MOVESET(sRoxanneTeamMovesOmanyte,  MOVE_WATER_GUN,    MOVE_WITHDRAW,     MOVE_SAND_ATTACK, MOVE_BIND);
+TEAM_MOVESET(sRoxanneTeamMovesShieldon, MOVE_METAL_SOUND,  MOVE_TACKLE,       MOVE_TAUNT,       MOVE_PROTECT);
+TEAM_MOVESET(sRoxanneTeamMovesNosepass, MOVE_ROCK_TOMB,    MOVE_TACKLE,       MOVE_HARDEN,      MOVE_THUNDER_WAVE);
 
 static const struct TrainerTeamMon sRoxanneTeamA[] =
 {
-    TEAM_MON_COMP(SPECIES_GEODUDE, ITEM_HARD_STONE, sRoxanneTeamAEvAtkDef, ABILITY_ROCK_HEAD, NATURE_ADAMANT, sRoxanneTeamAMovesGeodude, 15),
-    TEAM_MON_COMP_IV(SPECIES_NOSEPASS, ITEM_ORAN_BERRY, 28, sRoxanneTeamAEvBulky, ABILITY_STURDY, NATURE_BOLD, sRoxanneTeamAMovesNosepass, 15),
+    TEAM_MON_COMP_IV(SPECIES_SHUCKLE,  ITEM_ORAN_BERRY, 12, sTeamPresetEvSupport,         ABILITY_STURDY,       NATURE_BOLD,   sRoxanneTeamMovesShuckle,  17),
+    TEAM_MON_COMP_IV(SPECIES_KABUTO,   ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalBulky,   ABILITY_BATTLE_ARMOR, NATURE_CALM,   sRoxanneTeamMovesKabuto,   17),
+    TEAM_MON_COMP_IV(SPECIES_CRANIDOS, ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalSweeper, ABILITY_MOLD_BREAKER, NATURE_JOLLY,  sRoxanneTeamMovesCranidos, 17),
+    TEAM_MON_COMP_IV(SPECIES_NOSEPASS, ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalBulky,   ABILITY_STURDY,       NATURE_IMPISH, sRoxanneTeamMovesNosepass, 17),
 };
 
 static const struct TrainerTeamMon sRoxanneTeamB[] =
 {
-    TEAM_MON_COMP(SPECIES_NOSEPASS, ITEM_SITRUS_BERRY, sRoxanneTeamBEvSpDef, ABILITY_MAGNET_PULL, NATURE_CALM, sRoxanneTeamBMovesNosepass, 16),
-    TEAM_MON_COMP_IV(SPECIES_GEODUDE, ITEM_CHOICE_BAND, 30, sRoxanneTeamBEvAtkSpeed, ABILITY_ROCK_HEAD, NATURE_JOLLY, sRoxanneTeamBMovesGeodude, 16),
+    TEAM_MON_COMP_IV(SPECIES_SHUCKLE,  ITEM_ORAN_BERRY, 12, sTeamPresetEvSupport,       ABILITY_STURDY,      NATURE_BOLD,   sRoxanneTeamMovesShuckle,  17),
+    TEAM_MON_COMP_IV(SPECIES_OMANYTE,  ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalBulky, ABILITY_SHELL_ARMOR, NATURE_IMPISH, sRoxanneTeamMovesOmanyte,  17),
+    TEAM_MON_COMP_IV(SPECIES_SHIELDON, ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalBulky, ABILITY_STURDY,      NATURE_IMPISH, sRoxanneTeamMovesShieldon, 17),
+    TEAM_MON_COMP_IV(SPECIES_NOSEPASS, ITEM_ORAN_BERRY, 12, sTeamPresetEvPhysicalBulky, ABILITY_STURDY,      NATURE_IMPISH, sRoxanneTeamMovesNosepass, 17),
 };
 
 static const struct TrainerSpeciesTeam sRoxanneTeams[] =

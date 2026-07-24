@@ -13,6 +13,14 @@
 #include "constants/battle_partner.h"
 #include "constants/trainers.h"
 
+#define SLIDE_COUNTER_DEC(counter) \
+    do { \
+        if ((counter) > B_INTRO_SLIDE_SPEED) \
+            (counter) -= B_INTRO_SLIDE_SPEED; \
+        else \
+            (counter) = 0; \
+    } while (0)
+
 static void BattleIntroSlide1(u8);
 static void BattleIntroSlide2(u8);
 static void BattleIntroSlide3(u8);
@@ -262,10 +270,7 @@ static void BattleIntroSlide1(u8 taskId)
         if (gBattle_WIN0V & 0xFF00)
             gBattle_WIN0V -= 0x3FC;
 
-        if (gTasks[taskId].data[2] > B_INTRO_SLIDE_SPEED)
-            gTasks[taskId].data[2] -= B_INTRO_SLIDE_SPEED;
-        else
-            gTasks[taskId].data[2] = 0;
+        SLIDE_COUNTER_DEC(gTasks[taskId].data[2]);
 
         // Scanline settings have already been set in CB2_InitBattleInternal()
         for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
@@ -375,10 +380,7 @@ static void BattleIntroSlide2(u8 taskId)
         if (gBattle_WIN0V & 0xFF00)
             gBattle_WIN0V -= 0x3FC;
 
-        if (gTasks[taskId].data[2] > B_INTRO_SLIDE_SPEED)
-            gTasks[taskId].data[2] -= B_INTRO_SLIDE_SPEED;
-        else
-            gTasks[taskId].data[2] = 0;
+        SLIDE_COUNTER_DEC(gTasks[taskId].data[2]);
 
         // Scanline settings have already been set in CB2_InitBattleInternal()
         for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
@@ -467,10 +469,7 @@ static void BattleIntroSlide3(u8 taskId)
         if (gBattle_WIN0V & 0xFF00)
             gBattle_WIN0V -= 0x3FC;
 
-        if (gTasks[taskId].data[2] > B_INTRO_SLIDE_SPEED)
-            gTasks[taskId].data[2] -= B_INTRO_SLIDE_SPEED;
-        else
-            gTasks[taskId].data[2] = 0;
+        SLIDE_COUNTER_DEC(gTasks[taskId].data[2]);
 
         // Scanline settings have already been set in CB2_InitBattleInternal()
         for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
@@ -551,10 +550,7 @@ static void BattleIntroSlideLink(u8 taskId)
         if (gBattle_WIN0V & 0xFF00)
             gBattle_WIN0V -= 0x3FC;
 
-        if (gTasks[taskId].data[2] > B_INTRO_SLIDE_SPEED)
-            gTasks[taskId].data[2] -= B_INTRO_SLIDE_SPEED;
-        else
-            gTasks[taskId].data[2] = 0;
+        SLIDE_COUNTER_DEC(gTasks[taskId].data[2]);
 
         // Scanline settings have already been set in CB2_InitBattleInternal()
         for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
@@ -617,10 +613,7 @@ static void BattleIntroSlidePartner(u8 taskId)
         if ((gBattle_WIN0V & 0xFF00) != 0x4C00)
             gBattle_WIN0V += 0x3FC;
 
-        if (gTasks[taskId].data[2] > B_INTRO_SLIDE_SPEED)
-            gTasks[taskId].data[2] -= B_INTRO_SLIDE_SPEED;
-        else
-            gTasks[taskId].data[2] = 0;
+        SLIDE_COUNTER_DEC(gTasks[taskId].data[2]);
 
         gBattle_BG1_X = gTasks[taskId].data[2];
         gBattle_BG2_X = -gTasks[taskId].data[2];

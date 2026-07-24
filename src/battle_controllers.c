@@ -2363,8 +2363,8 @@ void BtlController_HandleDrawTrainerPic(u32 battler, u32 trainerPicId, bool32 is
                                                    subpriority);
 
         gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].oam.paletteNum = IndexOfSpritePaletteTag(gTrainerSprites[trainerPicId].palette.tag);
-        gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].x2 = -DISPLAY_WIDTH;
-        gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].sSpeedX = 2;
+        gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].x2 = -BATTLE_INTRO_MON_SLIDE_START_X;
+        gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].sSpeedX = BATTLE_INTRO_MON_SLIDE_SPEED;
         gSprites[gBattleStruct->trainerSlideSpriteIds[battler]].oam.affineParam = trainerPicId;
     }
     else // Player's side

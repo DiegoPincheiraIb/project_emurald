@@ -3,6 +3,7 @@
 #include "battle_controllers.h"
 #include "battle_ai_main.h"
 #include "battle_anim.h"
+#include "battle_main.h"
 #include "constants/battle_anim.h"
 #include "battle_interface.h"
 #include "main.h"
@@ -428,7 +429,13 @@ void SpriteCB_TrainerSlideIn(struct Sprite *sprite)
 {
     if (!(gIntroSlideFlags & 1))
     {
+        s16 previousX = sprite->x2;
+
         sprite->x2 += sprite->sSpeedX;
+        if ((previousX < 0 && sprite->x2 > 0)
+         || (previousX > 0 && sprite->x2 < 0))
+            sprite->x2 = 0;
+
         if (sprite->x2 == 0)
         {
             if (sprite->y2 != 0)

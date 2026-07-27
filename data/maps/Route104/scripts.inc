@@ -325,16 +325,16 @@ Route104_EventScript_Woman::
 Route104_EventScript_Boy2::
 	lock
 	faceplayer
-	goto_if_set FLAG_RECEIVED_TM_BULLET_SEED, Route104_EventScript_ReceivedBulletSeed
-	msgbox Route104_Text_LikeFillingMouthWithSeedsTakeThis, MSGBOX_DEFAULT
-	giveitem ITEM_TM_BULLET_SEED
+	goto_if_set FLAG_RECEIVED_TM_MACH_PUNCH, Route104_EventScript_ReceivedMachPunch
+	msgbox Route104_Text_LikePunchingFirstTakeThis, MSGBOX_DEFAULT
+	giveitem ITEM_TM_MACH_PUNCH
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-	setflag FLAG_RECEIVED_TM_BULLET_SEED
+	setflag FLAG_RECEIVED_TM_MACH_PUNCH
 	release
 	end
 
-Route104_EventScript_ReceivedBulletSeed::
-	msgbox Route104_Text_TMsAreOneTimeUse, MSGBOX_DEFAULT
+Route104_EventScript_ReceivedMachPunch::
+	msgbox Route104_Text_TMsAreNowInfinite, MSGBOX_DEFAULT
 	release
 	end
 
@@ -1024,6 +1024,13 @@ Route104_Text_ImNotATrainer:
 	.string "If you don't want to battle, stay out\n"
 	.string "of their sight.$"
 
+Route104_Text_LikePunchingFirstTakeThis:
+	.string "I am building my focus so I can\n"
+	.string "always be the first to strike!\p"
+	.string "You can have this, so you try it out!\p"
+	.string "Use it on a POKéMON, and it will learn\n"
+	.string "to punch at blinding speed.$"
+
 Route104_Text_LikeFillingMouthWithSeedsTakeThis:
 	.string "I like filling my mouth with seeds,\n"
 	.string "then spitting them out fast!\p"
@@ -1031,12 +1038,9 @@ Route104_Text_LikeFillingMouthWithSeedsTakeThis:
 	.string "Use it on a POKéMON, and it will learn\n"
 	.string "a move for firing seeds rapidly.$"
 
-Route104_Text_TMsAreOneTimeUse:
-	.string "A word of advice!\p"
-	.string "A TM, TECHNICAL MACHINE, is good only\n"
-	.string "for one-time use.\p"
-	.string "Once you use it, it's gone.\n"
-	.string "Think twice before using it!$"
+Route104_Text_TMsAreNowInfinite:
+	.string "The TMs, or TECHNICAL MACHINES,\p"
+	.string "can now be taught infinite times!$"
 
 Route104_Text_DontNeedThisTakeIt:
 	.string "This FLOWER SHOP started selling\n"

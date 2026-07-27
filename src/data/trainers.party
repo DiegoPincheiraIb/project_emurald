@@ -231,8 +231,13 @@ Music: Aqua
 Double Battle: No
 AI: Check Bad Move
 
+Totodile
+Level: 13
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Core Member: Yes
+
 Poochyena
-Level: 9
+Level: 13
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_MARCEL ===

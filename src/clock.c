@@ -28,6 +28,12 @@ void InitTimeBasedEvents(void)
 
 void DoTimeBasedEvents(void)
 {
+    if (!FlagGet(FLAG_SYS_CLOCK_SET) && FlagGet(FLAG_SET_WALL_CLOCK))
+    {
+        RtcInitLocalTimeOffset(0, 0);
+        InitTimeBasedEvents();
+    }
+
     if (FlagGet(FLAG_SYS_CLOCK_SET) && !InPokemonCenter())
     {
         RtcCalcLocalTime();

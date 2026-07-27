@@ -100,10 +100,11 @@ PlayerHouse_2F_EventScript_ResetPos_RunningShoesFemale::
 	return
 PlayersHouse_2F_EventScript_RTC_SetWallClock::
 	msgbox PlayersHouse_2F_Text_ClockIsSet, MSGBOX_DEFAULT
-	call PlayersHouse_2F_EventScript_CheckWallClock
-	End
+	goto PlayersHouse_2F_EventScript_AfterClock
+	end
 
 PlayersHouse_2F_EventScript_AfterClock::
+	call PlayersHouse_2F_EventScript_CheckWallClock_FirstTime
 	setvar VAR_LITTLEROOT_INTRO_STATE, 6
 	setflag FLAG_SET_WALL_CLOCK
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_PLAYERS_HOUSE_VIGOROTH_1

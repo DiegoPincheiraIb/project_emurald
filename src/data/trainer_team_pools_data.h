@@ -22,6 +22,9 @@
 #define TEAM_MON_LEVEL(levelValue) \
     { .overrideMask = TRAINER_TEAM_OVERRIDE_LEVEL, .lvl = levelValue }
 
+#define TEAM_MON_LEVEL_FIXED(levelValue) \
+    { .overrideMask = TRAINER_TEAM_OVERRIDE_LEVEL | TRAINER_TEAM_OVERRIDE_FIXED_LEVEL, .lvl = levelValue, .isLevelFixed = TRUE }
+
 #define TEAM_MON_FULL(speciesId, itemId, ivValue, evPtr) \
     { \
         .overrideMask = TRAINER_TEAM_OVERRIDE_SPECIES | TRAINER_TEAM_OVERRIDE_HELD_ITEM | TRAINER_TEAM_OVERRIDE_IV | TRAINER_TEAM_OVERRIDE_EVS, \
@@ -45,6 +48,22 @@
         .lvl = levelValue, \
     }
 
+#define TEAM_MON_FULL_PLUS_FIXED(speciesId, itemId, ivValue, evPtr, abilityId, natureId, movesPtr, levelValue) \
+    { \
+        .overrideMask = TRAINER_TEAM_OVERRIDE_SPECIES | TRAINER_TEAM_OVERRIDE_HELD_ITEM | TRAINER_TEAM_OVERRIDE_IV | TRAINER_TEAM_OVERRIDE_EVS \
+                      | TRAINER_TEAM_OVERRIDE_ABILITY | TRAINER_TEAM_OVERRIDE_NATURE | TRAINER_TEAM_OVERRIDE_MOVES | TRAINER_TEAM_OVERRIDE_LEVEL \
+                      | TRAINER_TEAM_OVERRIDE_FIXED_LEVEL, \
+        .species = speciesId, \
+        .heldItem = itemId, \
+        .iv = ivValue, \
+        .ev = evPtr, \
+        .ability = abilityId, \
+        .nature = natureId, \
+        .moves = movesPtr, \
+        .lvl = levelValue, \
+        .isLevelFixed = TRUE, \
+    }
+
 #define TEAM_EV_SPREAD(name, hp, atk, def, spatk, spdef, speed) \
     static const u8 name[6] = { hp, atk, def, spatk, spdef, speed }
 
@@ -57,6 +76,12 @@
 
 #define TEAM_MON_COMP_IV(speciesId, itemId, ivValue, evPtr, abilityId, natureId, movesPtr, levelValue) \
     TEAM_MON_FULL_PLUS(speciesId, itemId, ivValue, evPtr, abilityId, natureId, movesPtr, levelValue)
+
+#define TEAM_MON_COMP_FIXED(speciesId, itemId, evPtr, abilityId, natureId, movesPtr, levelValue) \
+    TEAM_MON_FULL_PLUS_FIXED(speciesId, itemId, 31, evPtr, abilityId, natureId, movesPtr, levelValue)
+
+#define TEAM_MON_COMP_FIXED_IV(speciesId, itemId, ivValue, evPtr, abilityId, natureId, movesPtr, levelValue) \
+    TEAM_MON_FULL_PLUS_FIXED(speciesId, itemId, ivValue, evPtr, abilityId, natureId, movesPtr, levelValue)
 
 TEAM_EV_SPREAD(sTeamPresetEvPhysicalSweeper, 0, 252, 0, 0, 4, 252);
 TEAM_EV_SPREAD(sTeamPresetEvSpecialSweeper, 0, 0, 4, 252, 0, 252);
@@ -124,12 +149,16 @@ static const struct TrainerSpeciesTeam sRoxanneTeams[] =
 #undef TEAM_MON_NATURE
 #undef TEAM_MON_MOVES
 #undef TEAM_MON_LEVEL
+#undef TEAM_MON_LEVEL_FIXED
 #undef TEAM_MON_FULL
 #undef TEAM_MON_FULL_PLUS
+#undef TEAM_MON_FULL_PLUS_FIXED
 #undef TEAM_EV_SPREAD
 #undef TEAM_MOVESET
 #undef TEAM_MON_COMP
 #undef TEAM_MON_COMP_IV
+#undef TEAM_MON_COMP_FIXED
+#undef TEAM_MON_COMP_FIXED_IV
 #undef TEAM_MON_PRESET_PHYSICAL_SWEEPER
 #undef TEAM_MON_PRESET_SPECIAL_SWEEPER
 #undef TEAM_MON_PRESET_PHYSICAL_BULKY

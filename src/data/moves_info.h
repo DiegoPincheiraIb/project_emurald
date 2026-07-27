@@ -3560,8 +3560,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Launches sharp spikes that\n"
             "strike 2 to 5 times."),
         .effect = EFFECT_MULTI_HIT,
-        .power = 20,
-        .type = TYPE_NORMAL,
+        .power = 18,
+        .type = TYPE_STEEL,
         .accuracy = 100,
         .pp = 15,
         .target = MOVE_TARGET_SELECTED,

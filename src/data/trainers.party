@@ -4793,9 +4793,10 @@ Class: Leader
 Pic: Leader Roxanne
 Gender: Female
 Music: Female
-Items: Potion / Potion
+Items: Full Heal / Full Heal
 Double Battle: No
 AI: Basic Trainer
+Mugshot: Purple
 
 Geodude
 Level: 12
@@ -4821,7 +4822,23 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Rock Throw
 - Rock Tomb
 
-Nosepass @ Oran Berry
+Nosepass
+Level: 15
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Block
+- Harden
+- Tackle
+- Rock Tomb
+
+Nosepass
+Level: 15
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Block
+- Harden
+- Tackle
+- Rock Tomb
+
+Nosepass
 Level: 15
 IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
 - Block

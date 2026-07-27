@@ -17,11 +17,12 @@ enum TrainerTeamMonOverrideMask
     TRAINER_TEAM_OVERRIDE_NATURE = (1 << 5),
     TRAINER_TEAM_OVERRIDE_MOVES = (1 << 6),
     TRAINER_TEAM_OVERRIDE_LEVEL = (1 << 7),
+    TRAINER_TEAM_OVERRIDE_FIXED_LEVEL = (1 << 8),
 };
 
 struct TrainerTeamMon
 {
-    u8 overrideMask;
+    u16 overrideMask;
     u16 species;
     u16 heldItem;
     u32 iv;
@@ -30,6 +31,7 @@ struct TrainerTeamMon
     u8 nature;
     const u16 *moves;
     u8 lvl;
+    bool8 isLevelFixed;
 };
 
 struct TrainerClassMonPool
@@ -97,6 +99,8 @@ static void ApplyTrainerMonOverrides(const struct TrainerTeamMon *poolMon, struc
     }
     if (poolMon->overrideMask & TRAINER_TEAM_OVERRIDE_LEVEL)
         partyEntry->lvl = poolMon->lvl;
+    if (poolMon->overrideMask & TRAINER_TEAM_OVERRIDE_FIXED_LEVEL)
+        partyEntry->isLevelFixed = poolMon->isLevelFixed;
 }
 
 // Returns TRUE when a class pool exists and applies one random mon override entry.

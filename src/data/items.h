@@ -278,7 +278,7 @@ const struct Item gItemsInfo[] =
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "well on Water- and\n"
+            "well on Flying- and\n"
             "Bug-type Pokémon."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
@@ -290,12 +290,12 @@ const struct Item gItemsInfo[] =
 
     [ITEM_NEST_BALL] =
     {
-        .name = ITEM_NAME("Nest Ball"),
+        .name = ITEM_NAME("Soil Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "better on weaker\n"
-            "Pokémon."),
+            "well on Ground- and\n"
+            "Grass-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -310,8 +310,8 @@ const struct Item gItemsInfo[] =
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "better on Pokémon\n"
-            "on the ocean floor."),
+            "well on Water- and\n"
+            "Ice-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -370,12 +370,12 @@ const struct Item gItemsInfo[] =
 
     [ITEM_REPEAT_BALL] =
     {
-        .name = ITEM_NAME("Repeat Ball"),
+        .name = ITEM_NAME("Scorched Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "better on Pokémon\n"
-            "caught before."),
+            "well on Fire- and\n"
+            "Rock-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -418,12 +418,12 @@ const struct Item gItemsInfo[] =
 
     [ITEM_LURE_BALL] =
     {
-        .name = ITEM_NAME("Lure Ball"),
+        .name = ITEM_NAME("Suppr. Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "well on fished\n"
-            "up Pokémon."),
+            "well on Dragon- and\n"
+            "Poison-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -438,8 +438,8 @@ const struct Item gItemsInfo[] =
         .price = 50,
         .description = COMPOUND_STRING(
             "A Ball that works\n"
-            "well on Moon\n"
-            "Stone users."),
+            "well on Dark- and\n"
+            "Ghost-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -466,12 +466,12 @@ const struct Item gItemsInfo[] =
 
     [ITEM_LOVE_BALL] =
     {
-        .name = ITEM_NAME("Love Ball"),
+        .name = ITEM_NAME("Ethereal Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
-            "Works well on\n"
-            "Pokémon of the\n"
-            "opposite gender."),
+            "A Ball that works\n"
+            "well on Psychic- and\n"
+            "Fairy-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -485,9 +485,9 @@ const struct Item gItemsInfo[] =
         .name = ITEM_NAME("Fast Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
-            "Works well on\n"
-            "very fast\n"
-            "Pokémon."),
+            "A Ball that works\n"
+            "well on Normal- and\n"
+            "Electric-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,
@@ -501,9 +501,9 @@ const struct Item gItemsInfo[] =
         .name = ITEM_NAME("Heavy Ball"),
         .price = 50,
         .description = COMPOUND_STRING(
-            "Works well on\n"
-            "very heavy\n"
-            "Pokémon."),
+            "A Ball that works\n"
+            "well on Steel- and\n"
+            "Fighting-type PKMN."),
         .pocket = POCKET_POKE_BALLS,
         .type = ITEM_USE_BAG_MENU,
         .battleUsage = EFFECT_ITEM_THROW_BALL,

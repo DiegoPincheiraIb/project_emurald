@@ -5,6 +5,7 @@
 #include "bg.h"
 #include "debug.h"
 #include "decompress.h"
+#include "datetime.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "event_object_lock.h"
@@ -1613,6 +1614,7 @@ void Script_ForceSaveGame(struct ScriptContext *ctx)
 static void ShowStartMenuExtraWindow(void) // Función que carga una ventana auxiliar en el menú de pausa.
 {
     struct SiiRtcInfo rtc;
+    struct DateTime dateTime;
     u8 dayOfWeek;
     u8 hour;
     u8 minute;
@@ -1621,9 +1623,12 @@ static void ShowStartMenuExtraWindow(void) // Función que carga una ventana aux
     u8 year;
 
     RtcGetInfo(&rtc);
+    RtcCalcLocalTime();
+    ConvertTimeToDateTime(&dateTime, &gLocalTime);
+
     dayOfWeek = rtc.dayOfWeek;
-    hour = ConvertBcdToBinary(rtc.hour);
-    minute = ConvertBcdToBinary(rtc.minute);
+    hour = dateTime.hour;
+    minute = dateTime.minute;
     month = ConvertBcdToBinary(rtc.month);
     day = ConvertBcdToBinary(rtc.day);
     year = ConvertBcdToBinary(rtc.year);
@@ -1633,8 +1638,8 @@ static void ShowStartMenuExtraWindow(void) // Función que carga una ventana aux
     DrawStdWindowFrame(sSafariBallsWindowId, FALSE);
     PrintStartMenuExtraWindowBuild(sSafariBallsWindowId);
     PrintStartMenuExtraWindowDateTime(sSafariBallsWindowId, dayOfWeek, hour, minute);
-    PrintStartMenuExtraWindowDate(sSafariBallsWindowId, month, day, year);
     PrintStartMenuExtraWindowSeason(sSafariBallsWindowId, month);
+    PrintStartMenuExtraWindowDate(sSafariBallsWindowId, month, day, year);
     // Outputs Window to VRAM
     CopyWindowToVram(sSafariBallsWindowId, 2);
 }

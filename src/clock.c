@@ -17,6 +17,7 @@
 
 static void UpdatePerDay(struct Time *localTime);
 static void UpdatePerMinute(struct Time *localTime);
+static void TrySyncLegacyWallClockSave(void);
 
 void InitTimeBasedEvents(void)
 {
@@ -30,9 +31,10 @@ void DoTimeBasedEvents(void)
 {
     if (!FlagGet(FLAG_SYS_CLOCK_SET) && FlagGet(FLAG_SET_WALL_CLOCK))
     {
-        RtcInitLocalTimeOffset(0, 0);
         InitTimeBasedEvents();
     }
+
+    TrySyncLegacyWallClockSave();
 
     if (FlagGet(FLAG_SYS_CLOCK_SET) && !InPokemonCenter())
     {
@@ -40,6 +42,33 @@ void DoTimeBasedEvents(void)
         UpdatePerDay(&gLocalTime);
         UpdatePerMinute(&gLocalTime);
     }
+}
+
+static void TrySyncLegacyWallClockSave(void)
+{
+    struct SiiRtcInfo rtc;
+    u8 rtcHour;
+    u8 rtcMinute;
+
+    if (!FlagGet(FLAG_SET_WALL_CLOCK)
+     || !FlagGet(FLAG_SYS_CLOCK_SET)
+     || FlagGet(FLAG_SYS_CLOCK_SYNC_MIGRATED))
+        return;
+
+    RtcGetInfo(&rtc);
+    rtcHour = ConvertBcdToBinary(rtc.hour);
+    rtcMinute = ConvertBcdToBinary(rtc.minute);
+
+    RtcCalcLocalTime();
+    if (gLocalTime.hours == rtcHour && gLocalTime.minutes == rtcMinute)
+    {
+        FlagSet(FLAG_SYS_CLOCK_SYNC_MIGRATED);
+        return;
+    }
+
+    RtcInitLocalTimeOffset(rtcHour, rtcMinute);
+    InitTimeBasedEvents();
+    FlagSet(FLAG_SYS_CLOCK_SYNC_MIGRATED);
 }
 
 static void UpdatePerDay(struct Time *localTime)
